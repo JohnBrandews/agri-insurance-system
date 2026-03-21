@@ -1,0 +1,24 @@
+import Sidebar from "@/components/layout/sidebar"
+import Header from "@/components/layout/header"
+
+export default function SuperAdminLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <div className="flex h-screen bg-slate-50 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-[40%] h-[40%] rounded-full bg-violet-100/40 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-5%] w-[50%] h-[50%] rounded-full bg-blue-100/40 blur-3xl pointer-events-none" />
+      
+      <Sidebar role="SUPER_ADMIN" />
+      
+      <div className="flex-1 flex flex-col z-10 relative">
+        <Header title="Super Admin Override" />
+        <main className="flex-1 overflow-y-auto p-8 pt-4">
+          {children}
+        </main>
+      </div>
+    </div>
+  )
+}

@@ -1,0 +1,41 @@
+{
+  "name": "agri-insurance-system",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.10.0",
+    "clsx": "latest",
+    "date-fns": "latest",
+    "lucide-react": "latest",
+    "next": "14.2.3",
+    "nodemailer": "^8.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwind-merge": "latest"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.2",
+    "@types/node": "^25.5.0",
+    "@types/nodemailer": "^7.0.11",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.27",
+    "eslint": "latest",
+    "eslint-config-next": "14.2.3",
+    "postcss": "latest",
+    "prisma": "^5.10.0",
+    "tailwindcss": "latest",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "prisma": {
+    "seed": "ts-node --compilerOptions {\\\"module\\\":\\\"CommonJS\\\"} prisma/seed.ts"
+  }
+}

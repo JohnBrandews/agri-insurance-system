@@ -1,0 +1,142 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model User {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  password           String
+  role               String    @default("FARMER")
+  name               String
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  
+  company            InsuranceCompany? @relation(fields: [companyId], references: [id])
+  companyId          String?
+  
+  managedAgents      Agent[]
+  farmerProfile      Farmer?
+}
+
+model InsuranceCompany {
+  id                 String    @id @default(cuid())
+  name               String
+  status             String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  users              User[]
+  policies           Policy[]
+  subscriptions      Subscription[]
+  agents             Agent[]
+  createdAt          DateTime  @default(now())
+}
+
+model Subscription {
+  id                 String    @id @default(cuid())
+  amount             Float
+  status             String    // ACTIVE, EXPIRED
+  companyId          String
+  company            InsuranceCompany @relation(fields: [companyId], references: [id])
+  startDate          DateTime
+  endDate            DateTime
+}
+
+model Agent {
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  user               User      @relation(fields: [userId], references: [id])
+  companyId          String
+  company            InsuranceCompany @relation(fields: [companyId], references: [id])
+  region             String
+  status             String    @default("ACTIVE") // ACTIVE, SUSPENDED
+  farmersRegistered  Farmer[]
+}
+
+model Farmer {
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  user               User      @relation(fields: [userId], references: [id])
+  phone              String?
+  agentId            String
+  agent              Agent     @relation(fields: [agentId], references: [id])
+  farms              Farm[]
+  enrollments        Enrollment[]
+}
+
+model Farm {
+  id                 String    @id @default(cuid())
+  farmerId           String
+  farmer             Farmer    @relation(fields: [farmerId], references: [id])
+  locationName       String
+  acreage            Float
+  cropType           String
+  polygonCoordinates String    // Stored as JSON string
+  status             String    @default("HEALTHY") // HEALTHY, RISK, TRIGGERED
+  imageUrl           String?
+  enrollments        Enrollment[]
+}
+
+model Policy {
+  id                 String    @id @default(cuid())
+  companyId          String
+  company            InsuranceCompany @relation(fields: [companyId], references: [id])
+  name               String
+  cropType           String
+  region             String
+  rainfallThreshold  Float     // Threshold in mm
+  premiumRate        Float
+  payoutRate         Float
+  seasonStart        DateTime
+  seasonEnd          DateTime
+  status             String    @default("ACTIVE")
+  enrollments        Enrollment[]
+}
+
+model Enrollment {
+  id                 String    @id @default(cuid())
+  farmerId           String
+  farmer             Farmer    @relation(fields: [farmerId], references: [id])
+  policyId           String
+  policy             Policy    @relation(fields: [policyId], references: [id])
+  farmId             String    // Specific farm covered
+  farm               Farm      @relation(fields: [farmId], references: [id])
+  status             String    @default("ACTIVE")
+  payouts            Payout[]
+}
+
+model WeatherData {
+  id                 String    @id @default(cuid())
+  date               DateTime
+  region             String
+  rainfallMm         Float
+}
+
+model TriggerEvent {
+  id                 String    @id @default(cuid())
+  policyId           String
+  dateTriggered      DateTime  @default(now())
+  rainfallRecorded   Float
+  severity           String    // WARNING, SEVERE
+}
+
+model Payout {
+  id                 String    @id @default(cuid())
+  enrollmentId       String
+  enrollment         Enrollment @relation(fields: [enrollmentId], references: [id])
+  amount             Float
+  status             String    @default("PENDING") // PENDING, APPROVED, REJECTED, PAID
+  dateCalculated     DateTime  @default(now())
+}
+
+model VerificationToken {
+  id         String   @id @default(cuid())
+  identifier String   // email or phone
+  token      String   @unique
+  role       String?  // the role they are assigned or logging in as
+  expires    DateTime
+  createdAt  DateTime @default(now())
+}
