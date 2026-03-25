@@ -1,5 +1,11 @@
 import { PrismaClient } from '@prisma/client'
+import crypto from 'crypto'
+
 const prisma = new PrismaClient()
+
+function hashPassword(password: string): string {
+  return crypto.createHash('sha256').update(password).digest('hex')
+}
 
 async function main() {
   // Clear optional old data first if needed, passing dependencies
@@ -8,10 +14,12 @@ async function main() {
   // 1. Create Super Admin
   const admin = await prisma.user.upsert({
     where: { email: 'admin@farmshield.co.ke' },
-    update: {},
+    update: {
+      password: hashPassword('admin'),
+    },
     create: {
       email: 'admin@farmshield.co.ke',
-      password: 'admin', // Simple for MVP dev, never in prod
+      password: hashPassword('admin'),
       role: 'SUPER_ADMIN',
       name: 'FarmShield Admin',
     },
@@ -32,10 +40,12 @@ async function main() {
   // Create Insurer Admin User
   const insurerUser = await prisma.user.upsert({
     where: { email: 'insurer@jubilee.co.ke' },
-    update: {},
+    update: {
+      password: hashPassword('admin'),
+    },
     create: {
       email: 'insurer@jubilee.co.ke',
-      password: 'admin',
+      password: hashPassword('admin'),
       role: 'INSURER',
       name: 'John Jubilee',
       companyId: company.id,
@@ -65,10 +75,12 @@ async function main() {
   // 4. Create an Agent for this company
   const agentUser = await prisma.user.upsert({
     where: { email: 'agent@jubilee.co.ke' },
-    update: {},
+    update: {
+      password: hashPassword('admin'),
+    },
     create: {
       email: 'agent@jubilee.co.ke',
-      password: 'admin',
+      password: hashPassword('admin'),
       role: 'AGENT',
       name: 'Mark The Agent',
       companyId: company.id,

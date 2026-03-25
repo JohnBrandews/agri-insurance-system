@@ -15,9 +15,10 @@ model User {
   role               String    @default("FARMER")
   name               String
   createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  updatedAt          DateTime  @default(now()) @updatedAt
+  lastLogin          DateTime?
   
-  company            InsuranceCompany? @relation(fields: [companyId], references: [id])
+  company            InsuranceCompany? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId          String?
   
   managedAgents      Agent[]
@@ -40,7 +41,7 @@ model Subscription {
   amount             Float
   status             String    // ACTIVE, EXPIRED
   companyId          String
-  company            InsuranceCompany @relation(fields: [companyId], references: [id])
+  company            InsuranceCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
   startDate          DateTime
   endDate            DateTime
 }
@@ -48,29 +49,35 @@ model Subscription {
 model Agent {
   id                 String    @id @default(cuid())
   userId             String    @unique
-  user               User      @relation(fields: [userId], references: [id])
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   companyId          String
-  company            InsuranceCompany @relation(fields: [companyId], references: [id])
+  company            InsuranceCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
   region             String
+  phone              String?
+  idNumber           String?
   status             String    @default("ACTIVE") // ACTIVE, SUSPENDED
   farmersRegistered  Farmer[]
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @default(now()) @updatedAt
 }
 
 model Farmer {
   id                 String    @id @default(cuid())
   userId             String    @unique
-  user               User      @relation(fields: [userId], references: [id])
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   phone              String?
   agentId            String
-  agent              Agent     @relation(fields: [agentId], references: [id])
+  agent              Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
   farms              Farm[]
   enrollments        Enrollment[]
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @default(now()) @updatedAt
 }
 
 model Farm {
   id                 String    @id @default(cuid())
   farmerId           String
-  farmer             Farmer    @relation(fields: [farmerId], references: [id])
+  farmer             Farmer    @relation(fields: [farmerId], references: [id], onDelete: Cascade)
   locationName       String
   acreage            Float
   cropType           String
@@ -78,12 +85,14 @@ model Farm {
   status             String    @default("HEALTHY") // HEALTHY, RISK, TRIGGERED
   imageUrl           String?
   enrollments        Enrollment[]
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @default(now()) @updatedAt
 }
 
 model Policy {
   id                 String    @id @default(cuid())
   companyId          String
-  company            InsuranceCompany @relation(fields: [companyId], references: [id])
+  company            InsuranceCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
   name               String
   cropType           String
   region             String
@@ -94,18 +103,22 @@ model Policy {
   seasonEnd          DateTime
   status             String    @default("ACTIVE")
   enrollments        Enrollment[]
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @default(now()) @updatedAt
 }
 
 model Enrollment {
   id                 String    @id @default(cuid())
   farmerId           String
-  farmer             Farmer    @relation(fields: [farmerId], references: [id])
+  farmer             Farmer    @relation(fields: [farmerId], references: [id], onDelete: Cascade)
   policyId           String
-  policy             Policy    @relation(fields: [policyId], references: [id])
+  policy             Policy    @relation(fields: [policyId], references: [id], onDelete: Cascade)
   farmId             String    // Specific farm covered
-  farm               Farm      @relation(fields: [farmId], references: [id])
+  farm               Farm      @relation(fields: [farmId], references: [id], onDelete: Cascade)
   status             String    @default("ACTIVE")
   payouts            Payout[]
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @default(now()) @updatedAt
 }
 
 model WeatherData {
@@ -130,12 +143,14 @@ model Payout {
   amount             Float
   status             String    @default("PENDING") // PENDING, APPROVED, REJECTED, PAID
   dateCalculated     DateTime  @default(now())
+  updatedAt          DateTime  @default(now()) @updatedAt
 }
 
 model VerificationToken {
   id         String   @id @default(cuid())
   identifier String   // email or phone
   token      String   @unique
+  type       String   @default("SETUP") // SETUP, OTP
   role       String?  // the role they are assigned or logging in as
   expires    DateTime
   createdAt  DateTime @default(now())

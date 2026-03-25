@@ -4,10 +4,19 @@ import { generateSetupToken, sendSetupEmail } from "@/lib/auth-utils"
 
 export async function POST(req: Request) {
   try {
-    const { name, email, region, companyId } = await req.json()
+    const { name, email, phone, idNumber, region, companyId } = await req.json()
 
     if (!name || !email || !region || !companyId) {
       return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 })
+    }
+
+    // Check if user with this email already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    })
+
+    if (existingUser) {
+      return NextResponse.json({ success: false, error: "An agent with this email already exists" }, { status: 400 })
     }
 
     // 1. Create the Agent User
@@ -27,6 +36,8 @@ export async function POST(req: Request) {
         userId: user.id,
         companyId,
         region,
+        phone,
+        idNumber,
         status: "ACTIVE"
       }
     })

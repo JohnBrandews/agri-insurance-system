@@ -1,280 +1,243 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Shield, CloudRain, Users, TrendingUp, CheckCircle, ArrowRight, Sprout, MapPin, Zap } from "lucide-react";
+import { Shield, CloudRain, TrendingUp, ArrowRight, MapPin, Globe, CheckCircle, Zap, Users, Heart } from "lucide-react";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-white">
       {/* Navigation */}
       <nav className="absolute top-0 left-0 right-0 z-50 p-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                <Shield className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-2xl font-bold text-white">FarmMan Insurance</span>
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
+          <div className="flex items-center space-x-3 cursor-pointer group">
+            <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20 group-hover:bg-white/30 transition-all">
+              <Shield className="w-6 h-6 text-[#A7E92F]" />
             </div>
-            <Link 
-              href="/login" 
-              className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold py-3 px-6 rounded-xl transition-all border border-white/30"
-            >
-              Sign In
+            <span className="text-xl font-bold text-[#A7E92F] uppercase tracking-tighter">FarmMan</span>
+          </div>
+          <div className="hidden md:flex items-center space-x-8 text-white font-semibold">
+            <Link href="#features" className="hover:text-emerald-300 transition-colors">Features</Link>
+            <Link href="#process" className="hover:text-emerald-300 transition-colors">How it Works</Link>
+            <Link href="#impact" className="hover:text-emerald-300 transition-colors">Impact</Link>
+            <Link href="/login" className="bg-white/20 backdrop-blur-md hover:bg-white/30 py-2 px-6 rounded-xl border border-white/20 transition-all">
+              Login
             </Link>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <div className="relative w-full h-[85vh] overflow-hidden">
+      <section className="relative w-full h-[90vh] min-h-[800px] overflow-hidden">
         <Image
-          src="/images/homepage.jpg"
-          alt="Farmer in a golden wheat field at sunset"
+          src="/images/homepage_clean.png"
+          alt="Modern Farming"
           fill
           className="object-cover object-center"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60"></div>
-
-        <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-12 lg:px-24">
-          <div className="max-w-4xl mx-auto w-full text-center text-white space-y-8">
-            <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full px-4 py-2">
-              <Zap className="w-4 h-4 text-yellow-300" />
-              <span className="text-sm font-medium">Weather-Indexed Micro-Insurance for Farmers</span>
+        
+        {/* Responsive padding and centering to balance visibility for both Nav and Buttons */}
+        <div className="absolute inset-0 flex flex-col justify-center pt-24 pb-32 sm:pt-28 sm:pb-40 lg:pb-48 px-6 sm:px-12 lg:px-24">
+          <div className="max-w-3xl w-full text-white space-y-4 sm:space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-top-8 duration-1000">
+            <div className="inline-flex items-center space-x-2 bg-emerald-500/30 backdrop-blur-md px-4 py-1.5 rounded-full border border-emerald-500/40">
+              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+              <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Trusted by 10k+ Farmers Across Africa</span>
             </div>
             
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight">
-              Protecting Your Harvest,<br />
-              <span className="text-emerald-400">Securing Your Future</span>
+            <h1 className="text-4xl sm:text-6xl lg:text-8xl font-black tracking-tight leading-[0.95] drop-shadow-2xl">
+              Climate Resilience <br />
+              <span className="text-[#A7E92F]">Simplified.</span>
             </h1>
             
-            <p className="text-xl sm:text-2xl text-white/90 max-w-2xl mx-auto font-medium">
-              Data-driven crop insurance with automatic payouts when weather triggers are met. No claims to file. No delays.
+            <p className="text-lg sm:text-xl text-white/90 font-medium max-w-xl leading-snug drop-shadow-lg">
+              Protecting livelihoods through data-driven micro-insurance. Seamless payouts delivered directly to your mobile wallet.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+            <div className="flex flex-col sm:flex-row gap-4 pt-2">
               <Link 
                 href="/login" 
-                className="inline-flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-10 rounded-2xl shadow-2xl shadow-emerald-500/30 transition-all hover:-translate-y-1 text-lg"
+                className="bg-[#436728] hover:bg-[#4d752e] text-white font-bold py-4 px-10 rounded-2xl shadow-xl transition-all hover:scale-105 flex items-center justify-center text-base sm:text-lg"
               >
-                Get Started
-                <ArrowRight className="w-5 h-5 ml-2" />
+                Join the Network
+                <ArrowRight className="w-5 h-5 ml-3" />
               </Link>
               <Link 
-                href="#features" 
-                className="inline-flex items-center justify-center bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-bold py-4 px-10 rounded-2xl border border-white/40 transition-all hover:-translate-y-1 text-lg"
+                href="/login" 
+                className="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white font-bold py-4 px-10 rounded-2xl border border-white/30 transition-all flex items-center justify-center text-base sm:text-lg"
               >
-                Learn More
+                Explore Policies
               </Link>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
-            <div className="w-1 h-3 bg-white/70 rounded-full animate-pulse"></div>
-          </div>
+      {/* Feature Cards - positioned to overlap hero slightly */}
+      <section id="features" className="relative z-20 max-w-7xl mx-auto px-6 -mt-32 md:-mt-40">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { icon: <CloudRain className="w-8 h-8 text-emerald-600" />, title: "Smart Payouts", desc: "Real-time weather data triggers instant payouts to your mobile wallet. No complicated claims.", bg: "bg-emerald-50" },
+            { icon: <MapPin className="w-8 h-8 text-blue-600" />, title: "Precision Mapping", desc: "GPS field mapping ensures your specific acreage is protected based on hyperlocal weather stations.", bg: "bg-blue-50" },
+            { icon: <Zap className="w-8 h-8 text-amber-600" />, title: "Instant Alerts", desc: "Stay informed with real-time climate alerts and early warning notifications via SMS.", bg: "bg-amber-50" }
+          ].map((item, idx) => (
+            <div key={idx} className="bg-white rounded-[2.5rem] p-10 shadow-2xl border border-slate-100 group hover:-translate-y-2 transition-all duration-500">
+              <div className={`${item.bg} w-20 h-20 rounded-2xl flex items-center justify-center mb-8 group-hover:rotate-6 transition-transform`}>
+                {item.icon}
+              </div>
+              <h3 className="text-3xl font-black text-slate-900 mb-4">{item.title}</h3>
+              <p className="text-slate-500 text-lg font-medium leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
         </div>
-      </div>
+      </section>
 
-      {/* Stats Section */}
-      <div className="bg-gradient-to-br from-emerald-600 to-teal-700 py-16 -mt-20 relative z-10 mx-4 sm:mx-8 lg:mx-16 rounded-3xl shadow-2xl">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-4xl sm:text-5xl font-extrabold text-white mb-2">10,000+</div>
-              <div className="text-emerald-200 font-medium">Farmers Protected</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl sm:text-5xl font-extrabold text-white mb-2">50K+</div>
-              <div className="text-emerald-200 font-medium">Acres Insured</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl sm:text-5xl font-extrabold text-white mb-2">$2M+</div>
-              <div className="text-emerald-200 font-medium">Payouts Distributed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl sm:text-5xl font-extrabold text-white mb-2">24hrs</div>
-              <div className="text-emerald-200 font-medium">Average Payout Time</div>
-            </div>
-          </div>
+      {/* NEW: Our Process Section */}
+      <section id="process" className="py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-6 text-center mb-20">
+          <h2 className="text-5xl md:text-6xl font-black text-slate-900 mb-6">How it Works</h2>
+          <p className="text-xl text-slate-500 max-w-2xl mx-auto font-medium">Getting protected takes less than five minutes. Here is our simple three-step process.</p>
         </div>
-      </div>
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-16 relative">
+          {/* Connector Line (hidden on mobile) */}
+          <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-slate-100 -translate-y-1/2 z-0"></div>
+          
+          {[
+            { step: "01", title: "Map Your Farm", desc: "Register your field using our precision GPS mapping tool to define your specific coverage area." },
+            { step: "02", title: "Pick a Policy", desc: "Select a weather-indexed plan that matches your crop type and seasonal risk profile." },
+            { step: "03", title: "Automated Protection", desc: "Sit back and farm. If rainfall or drought hits index limits, payouts trigger automatically." }
+          ].map((item, i) => (
+            <div key={i} className="relative z-10 flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-emerald-500 text-white flex items-center justify-center text-2xl font-black mb-8 border-8 border-white">
+                {item.step}
+              </div>
+              <h4 className="text-2xl font-black text-slate-900 mb-4">{item.title}</h4>
+              <p className="text-slate-500 text-center font-medium leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-      {/* Features Section */}
-      <div id="features" className="py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 mb-4">
-              Why Choose FarmMan?
+      {/* Impact Section - Refined for General Empowerment */}
+      <section id="impact" className="py-24 bg-white overflow-hidden relative border-t border-slate-50">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
+            <div className="inline-flex items-center space-x-2 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
+              <Heart className="w-4 h-4 text-emerald-600" />
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">Our Mission</span>
+            </div>
+            <h2 className="text-5xl md:text-7xl font-black leading-tight tracking-tight text-slate-900">
+              Empowering <br />
+              <span className="text-emerald-600">Every Farmer.</span>
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Built for farmers, by people who understand agriculture. Simple, transparent, and always there when you need it.
+            <p className="text-xl text-slate-500 font-medium leading-relaxed max-w-xl">
+              Agriculture is the backbone of our economy. Our mission is to provide every smallholder farmer with the financial resilience they need to thrive in a changing climate.
             </p>
+            <div className="grid grid-cols-2 gap-8 pt-4">
+              <div>
+                <p className="text-4xl font-black text-slate-900">10k+</p>
+                <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">Active Beneficiaries</p>
+              </div>
+              <div>
+                <p className="text-4xl font-black text-emerald-600">12 countries</p>
+                <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">Global Impact</p>
+              </div>
+            </div>
+            <div className="pt-6">
+               <Link href="/login" className="inline-flex items-center text-emerald-600 font-black text-xl hover:text-emerald-700 group">
+                 Join our Impact Movement
+                 <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform" />
+               </Link>
+            </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:-translate-y-2 transition-all border border-slate-100">
-              <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mb-6">
-                <CloudRain className="w-7 h-7 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3">Automatic Payouts</h3>
-              <p className="text-slate-600 leading-relaxed">
-                When rainfall drops below your policy threshold, payouts are triggered automatically. No claims to file, no paperwork.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:-translate-y-2 transition-all border border-slate-100">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mb-6">
-                <MapPin className="w-7 h-7 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3">GPS Farm Mapping</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Our field agents use GPS to map your farm boundaries accurately, ensuring precise coverage for your exact location.
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:-translate-y-2 transition-all border border-slate-100">
-              <div className="w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center mb-6">
-                <Users className="w-7 h-7 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3">Field Agent Support</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Local agents in your region provide personalized support, from registration to claims assistance.
-              </p>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:-translate-y-2 transition-all border border-slate-100">
-              <div className="w-14 h-14 bg-gradient-to-br from-violet-400 to-violet-600 rounded-2xl flex items-center justify-center mb-6">
-                <TrendingUp className="w-7 h-7 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3">Affordable Premiums</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Micro-insurance policies designed for smallholder farmers. Pay only for what you need, when you need it.
-              </p>
-            </div>
-
-            {/* Feature 5 */}
-            <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:-translate-y-2 transition-all border border-slate-100">
-              <div className="w-14 h-14 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-2xl flex items-center justify-center mb-6">
-                <Zap className="w-7 h-7 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3">Instant Activation</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Get covered within minutes. Our streamlined process means you're protected before the next weather event.
-              </p>
-            </div>
-
-            {/* Feature 6 */}
-            <div className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:-translate-y-2 transition-all border border-slate-100">
-              <div className="w-14 h-14 bg-gradient-to-br from-rose-400 to-rose-600 rounded-2xl flex items-center justify-center mb-6">
-                <Shield className="w-7 h-7 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3">Trusted Protection</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Backed by licensed insurance companies and regulated by national authorities. Your coverage is guaranteed.
-              </p>
-            </div>
+          <div className="relative">
+             <div className="relative z-10 w-full aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white ring-1 ring-slate-100">
+                <Image 
+                  src="/images/womenfarm.jpg"
+                  alt="Sustainable Farming"
+                  fill
+                  className="object-cover transition-transform duration-700 hover:scale-110"
+                />
+             </div>
+             {/* Decorative Background Element */}
+             <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-[#A7E92F]/20 rounded-full blur-3xl -z-0"></div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* How It Works Section */}
-      <div className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 mb-4">
-              How It Works
+      {/* Statistics Section - Expanded */}
+      <section className="py-32 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
+          <div>
+            <h2 className="text-5xl md:text-6xl font-black text-slate-900 leading-tight mb-8">
+              Reliable protection <br /> 
+              at scale.
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Get insured in three simple steps
+            <p className="text-xl text-slate-500 font-medium leading-relaxed mb-12">
+              Our infrastructure is built for speed and transparency. By leveraging satellite imagery and mobile financial services, we eliminate the friction in traditional insurance.
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/30">
-                <span className="text-4xl font-extrabold text-white">1</span>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-3">Register Your Farm</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Meet with a field agent who will map your farm using GPS and register your details in our system.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-500/30">
-                <span className="text-4xl font-extrabold text-white">2</span>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-3">Choose Your Policy</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Select coverage based on your crop type, location, and rainfall threshold that matches your needs.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-amber-500/30">
-                <span className="text-4xl font-extrabold text-white">3</span>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-3">Get Automatic Payouts</h3>
-              <p className="text-slate-600 leading-relaxed">
-                When rainfall drops below your threshold, receive automatic payouts directly to your mobile wallet.
-              </p>
+            <div className="space-y-10">
+              {[
+                { icon: <Globe className="w-8 h-8" />, title: "Hyper-Local Coverage", desc: "Satellite data allows us to cover farmers in the most remote areas with exact weather metrics." },
+                { icon: <TrendingUp className="w-8 h-8" />, title: "Proven Resilience", desc: "During last year's severe drought, our network paid out over $1.5M in under 48 hours." }
+              ].map((item, i) => (
+                <div key={i} className="flex space-x-6">
+                  <div className="w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-emerald-500 shrink-0">
+                    {item.icon}
+                  </div>
+                  <div>
+                    <h4 className="text-2xl font-black text-slate-800 mb-2">{item.title}</h4>
+                    <p className="text-slate-500 font-medium leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="py-24 bg-gradient-to-br from-slate-900 to-slate-800 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-emerald-500 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6">
-            Ready to Protect Your Farm?
-          </h2>
-          <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-            Join thousands of farmers who trust FarmMan Insurance for their crop protection. Get covered today.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/login" 
-              className="inline-flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-10 rounded-2xl shadow-2xl shadow-emerald-500/30 transition-all hover:-translate-y-1 text-lg"
-            >
-              Sign Up Now
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Link>
-            <Link 
-              href="/login" 
-              className="inline-flex items-center justify-center bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-bold py-4 px-10 rounded-2xl border border-white/30 transition-all hover:-translate-y-1 text-lg"
-            >
-              Contact Sales
-            </Link>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-6">
+              <div className="bg-emerald-500 text-white p-10 rounded-[3rem] shadow-emerald-200 shadow-2xl flex flex-col justify-end h-80">
+                <p className="text-6xl font-black">24h</p>
+                <p className="font-bold opacity-80 uppercase tracking-widest text-sm mt-2">Payout speed</p>
+              </div>
+              <div className="bg-slate-900 text-white p-10 rounded-[3rem] flex flex-col justify-end h-64">
+                <p className="text-5xl font-black">100%</p>
+                <p className="font-bold opacity-70 uppercase tracking-widest text-sm mt-2">Transparent</p>
+              </div>
+            </div>
+            <div className="pt-16 space-y-6">
+              <div className="bg-[#A7E92F] text-slate-900 p-10 rounded-[3rem] shadow-lime-200 shadow-2xl flex flex-col justify-end h-64">
+                <p className="text-5xl font-black">50k+</p>
+                <p className="font-bold opacity-60 uppercase tracking-widest text-sm mt-2">Acres Protected</p>
+              </div>
+              <div className="bg-blue-600 text-white p-10 rounded-[3rem] shadow-blue-200 shadow-2xl flex flex-col justify-end h-80">
+                <Users className="w-12 h-12 mb-4 opacity-50" />
+                <p className="text-5xl font-black">$2M+</p>
+                <p className="font-bold opacity-80 uppercase tracking-widest text-sm mt-2">Total Paid</p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 py-12 border-t border-slate-800">
+      <footer className="bg-white py-24 border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center space-x-3 mb-4 md:mb-0">
-              <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-white">FarmMan Insurance</span>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-12 mb-16">
+            <div className="flex items-center space-x-3">
+              <Shield className="w-8 h-8 text-slate-900" />
+              <span className="text-2xl font-black uppercase tracking-tighter">FarmMan</span>
             </div>
-            <p className="text-slate-400 text-sm">
-              © 2024 FarmMan Insurance. All rights reserved.
-            </p>
+            <div className="flex flex-wrap justify-center gap-10 text-slate-400 font-black text-sm uppercase tracking-widest">
+              <Link href="#" className="hover:text-slate-900 transition-colors">Infrastructure</Link>
+              <Link href="#" className="hover:text-slate-900 transition-colors">Our Vision</Link>
+              <Link href="#" className="hover:text-slate-900 transition-colors">Policy Data</Link>
+              <Link href="#" className="hover:text-slate-900 transition-colors">Connect</Link>
+            </div>
+          </div>
+          <div className="pt-12 border-t border-slate-50 text-center md:text-left flex flex-col md:flex-row justify-between text-slate-300 text-xs font-bold uppercase tracking-[0.2em]">
+            <p>© 2024 FarmMan. Securing the Future of Food.</p>
+            <div className="flex gap-8 mt-4 md:mt-0">
+               <Link href="#">Twitter / X</Link>
+               <Link href="#">LinkedIn</Link>
+            </div>
           </div>
         </div>
       </footer>

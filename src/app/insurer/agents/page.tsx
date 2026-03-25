@@ -5,6 +5,7 @@ import { Users, Plus, Mail, MapPin, CheckCircle2, XCircle, UserCheck } from "luc
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/session"
 import { AddAgentForm } from "@/components/AddAgentForm"
+import { AgentCard } from "@/components/AgentCard"
 
 export default async function AgentsPage() {
   const session = await requireRole(["INSURER"])
@@ -17,7 +18,7 @@ export default async function AgentsPage() {
       farmersRegistered: { include: { user: true } }
     },
     orderBy: { createdAt: "desc" }
-  })
+  }) as any[]
 
   const activeAgents = agents.filter(a => a.status === "ACTIVE")
   const suspendedAgents = agents.filter(a => a.status === "SUSPENDED")
@@ -69,20 +70,22 @@ export default async function AgentsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Add Agent Form */}
-        <Card className="h-fit">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Users className="w-5 h-5 mr-2 text-blue-500" />
-              Invite New Agent
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <AddAgentForm companyId={companyId} />
-          </CardContent>
-        </Card>
+        <div className="lg:col-span-2">
+          <Card className="h-fit sticky top-24">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Users className="w-5 h-5 mr-2 text-blue-500" />
+                Invite New Agent
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AddAgentForm companyId={companyId} />
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Agents List */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-1 space-y-4">
           {agents.length === 0 ? (
             <Card>
               <CardContent className="py-16">
@@ -95,45 +98,7 @@ export default async function AgentsPage() {
             </Card>
           ) : (
             agents.map((agent) => (
-              <Card key={agent.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">
-                        {agent.user.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-slate-800">{agent.user.name}</h4>
-                        <p className="text-sm text-slate-500 flex items-center mt-1">
-                          <Mail className="w-3 h-3 mr-1" />
-                          {agent.user.email}
-                        </p>
-                        <p className="text-sm text-slate-500 flex items-center mt-1">
-                          <MapPin className="w-3 h-3 mr-1" />
-                          {agent.region}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right">
-                        <p className="text-sm font-semibold text-slate-700">{agent.farmersRegistered.length}</p>
-                        <p className="text-xs text-slate-500">Farmers</p>
-                      </div>
-                      <Badge variant={agent.status === "ACTIVE" ? "success" : "warning"}>
-                        {agent.status}
-                      </Badge>
-                      <div className="flex space-x-2">
-                        <Button variant="outline" size="sm" className="text-emerald-500 hover:bg-emerald-50">
-                          <CheckCircle2 className="w-4 h-4" />
-                        </Button>
-                        <Button variant="outline" size="sm" className="text-red-500 hover:bg-red-50">
-                          <XCircle className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <AgentCard key={agent.id} agent={agent} />
             ))
           )}
         </div>

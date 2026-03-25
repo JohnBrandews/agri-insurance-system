@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { generateOTP, sendSMS } from "@/lib/auth-utils"
+import { generateOTP, sendSMS, hashPassword } from "@/lib/auth-utils"
 
 export async function POST(req: Request) {
   try {
@@ -51,7 +51,10 @@ export async function POST(req: Request) {
         where: { email: body.email }
       })
 
-      if (!user || user.password !== body.password) {
+      // Hashing the comparison password
+      const hashedPassword = hashPassword(body.password)
+
+      if (!user || user.password !== hashedPassword) {
         return NextResponse.json({ success: false, error: "Invalid credentials" }, { status: 401 })
       }
 

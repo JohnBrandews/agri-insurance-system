@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Add any specific config here
+  transpilePackages: ['leaflet', 'react-leaflet']
 };
 
 export default nextConfig;

@@ -84,19 +84,24 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-emerald-50 via-white to-blue-50">
       {/* Left side - Branding and Image Section */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-emerald-600 to-teal-700">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-emerald-300 rounded-full blur-3xl"></div>
-        </div>
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <Image 
+          src="/images/guy.jpg"
+          alt="Farmer"
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* Translucent Emerald Overlay for readability */}
+        <div className="absolute inset-0 bg-emerald-900/60 backdrop-blur-[2px]"></div>
         
         <div className="relative z-10 flex flex-col justify-between w-full p-16">
           <div>
             <div className="flex items-center space-x-3 mb-8">
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                <Shield className="w-7 h-7 text-white" />
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20">
+                <Shield className="w-7 h-7 text-[#A7E92F]" />
               </div>
-              <span className="text-3xl font-bold text-white">FarmMan Insurance</span>
+              <span className="text-3xl font-bold text-white tracking-tight">FarmMan <span className="text-[#A7E92F]">Insurance</span></span>
             </div>
           </div>
 

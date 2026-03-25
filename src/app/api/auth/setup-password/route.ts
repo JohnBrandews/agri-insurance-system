@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { hashPassword } from "@/lib/auth-utils"
 
 export async function POST(req: Request) {
   try {
@@ -14,7 +15,7 @@ export async function POST(req: Request) {
       where: { token }
     })
 
-    if (!setupToken || setupToken.type !== "SETUP" || setupToken.expires < new Date()) {
+    if (!setupToken || setupToken.expires < new Date()) {
       return NextResponse.json({ success: false, error: "Invalid or expired setup token" }, { status: 400 })
     }
 
@@ -23,16 +24,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Role mismatch for this token" }, { status: 403 })
     }
 
-    // 3. Update the user's password (by locating the user via email)
-    const user = await prisma.user.update({
+    // 3. Update the user's password
+    const hashedPassword = hashPassword(password)
+    await prisma.user.update({
       where: { email: setupToken.identifier },
-      data: { password } // Update directly for MVP
+      data: { 
+        password: hashedPassword
+      }
     })
 
     // 4. Delete token
     await prisma.verificationToken.delete({ where: { id: setupToken.id } })
 
-    return NextResponse.json({ success: true, message: "Password setup gracefully." })
+    return NextResponse.json({ success: true, message: "Password setup successfully." })
 
   } catch (error: any) {
     console.error("Setup Password Error:", error)

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/session"
 import { FarmMapClient } from "@/components/FarmMapClient"
 import { AddAgentForm } from "@/components/AddAgentForm"
+import Link from "next/link"
 
 export default async function InsurerDashboard() {
   const session = await requireRole(["INSURER"])
@@ -23,7 +24,7 @@ export default async function InsurerDashboard() {
   let totalPremiums = 0
   let totalPayouts = 0
 
-  const allFarms = []
+  const allFarms: any[] = []
 
   policies.forEach(policy => {
     totalFarmers += policy.enrollments.length
@@ -155,9 +156,9 @@ export default async function InsurerDashboard() {
                 <FilePlus className="w-4 h-4 mr-2 text-emerald-500" />
                 Create New Policy
               </h4>
-              <Button className="w-full bg-emerald-600 hover:bg-emerald-700" asChild>
-                <a href="/insurer/policies/new">Create Insurance Policy</a>
-              </Button>
+              <Link href="/insurer/policies">
+                <Button className="w-full bg-emerald-600 hover:bg-emerald-700">Create Insurance Policy</Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
