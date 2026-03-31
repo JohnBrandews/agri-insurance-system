@@ -4,19 +4,20 @@ import { MapPin, Sprout, Users, TrendingUp } from "lucide-react"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/session"
 import { FarmMapClient } from "@/components/FarmMapClient"
+import { resolveFarmCoordinates } from "@/lib/kenya-locations"
 
 export default async function MapPage() {
   const session = await requireRole(["INSURER"])
   const companyId = session.companyId!
 
-  // Fetch company policies and farms
-  const policies = await prisma.policy.findMany({
+  const agents = await prisma.agent.findMany({
     where: { companyId },
     include: {
-      enrollments: {
+      farmersRegistered: {
         include: {
-          farmer: { include: { user: true } },
-          farm: true
+          user: true,
+          farms: true,
+          enrollments: { include: { policy: true } }
         }
       }
     }
@@ -24,17 +25,19 @@ export default async function MapPage() {
 
   // Collect all farms
   const allFarms: any[] = []
-  policies.forEach(policy => {
-    policy.enrollments.forEach(enrollment => {
-      allFarms.push({
-        id: enrollment.farm.id,
-        locationName: enrollment.farm.locationName,
-        acreage: enrollment.farm.acreage,
-        cropType: enrollment.farm.cropType,
-        status: enrollment.farm.status,
-        coordinates: JSON.parse(enrollment.farm.polygonCoordinates || "[]"),
-        farmerName: enrollment.farmer.user.name,
-        policyName: policy.name
+  agents.forEach(agent => {
+    agent.farmersRegistered.forEach(farmer => {
+      farmer.farms.forEach(farm => {
+        allFarms.push({
+          id: farm.id,
+          locationName: farm.locationName,
+          acreage: farm.acreage,
+          cropType: farm.cropType,
+          status: farm.status,
+          coordinates: resolveFarmCoordinates(farm.polygonCoordinates || "[]", agent.region, `${farmer.id}-${farm.id}`),
+          farmerName: farmer.user.name,
+          policyName: farmer.enrollments[0]?.policy?.name || "No Policy"
+        })
       })
     })
   })
@@ -151,7 +154,10 @@ export default async function MapPage() {
                       <td className="py-3 px-4 text-slate-800 font-medium">{farm.acreage}</td>
                       <td className="py-3 px-4">
                         <Badge 
-                          variant={farm.status === "HEALTHY" ? "success" : farm.status === "RISK" ? "warning" : "danger"}
+                          className={
+                            farm.status === "HEALTHY" ? "bg-emerald-500 text-white border-none" : 
+                            farm.status === "RISK" ? "bg-amber-500 text-white border-none" : "bg-red-500 text-white border-none"
+                          }
                         >
                           {farm.status}
                         </Badge>

@@ -21,17 +21,23 @@ export default async function AnalyticsPage() {
     return acc
   }, {} as Record<string, number>)
 
-  // Get weather data stats
-  const weatherDataCount = await prisma.weatherData.count()
-  const recentWeather = await prisma.weatherData.findMany({
+  // Get recent rainfall data
+  const weatherDataCount = await prisma.rainfallReading.count()
+  const recentWeather = await prisma.rainfallReading.findMany({
     orderBy: { date: "desc" },
-    take: 5
+    take: 5,
+    include: {
+      farm: true,
+    },
   })
 
   // Get trigger events
   const triggerEvents = await prisma.triggerEvent.findMany({
     orderBy: { dateTriggered: "desc" },
-    take: 10
+    take: 10,
+    include: {
+      farm: true,
+    },
   })
 
   return (
@@ -139,7 +145,7 @@ export default async function AnalyticsPage() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               Recent Weather Readings
-              <Badge variant="outline">{weatherDataCount} Total Records</Badge>
+              <Badge className="bg-slate-100 text-slate-800 border-slate-200">{weatherDataCount} Total Records</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -156,13 +162,13 @@ export default async function AnalyticsPage() {
                         <Droplets className="w-5 h-5" />
                       </div>
                       <div>
-                        <p className="font-semibold text-slate-800">{data.region}</p>
+                        <p className="font-semibold text-slate-800">{data.farm.locationName}</p>
                         <p className="text-xs text-slate-500">{data.date.toLocaleDateString()}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold text-blue-600">{data.rainfallMm}mm</p>
-                      <p className="text-xs text-slate-500">Rainfall</p>
+                      <p className="text-lg font-bold text-blue-600">{data.dailyMm}mm</p>
+                      <p className="text-xs text-slate-500">{data.cumulativeMm}mm cumulative</p>
                     </div>
                   </div>
                 ))}
@@ -177,7 +183,7 @@ export default async function AnalyticsPage() {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             Recent Trigger Events
-            <Badge variant="danger">{triggerEvents.length} Events</Badge>
+            <Badge className="bg-red-500 text-white border-none">{triggerEvents.length} Events</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -191,6 +197,7 @@ export default async function AnalyticsPage() {
                 <thead>
                   <tr className="border-b border-slate-200">
                     <th className="text-left py-3 px-4 font-semibold text-slate-600">Policy ID</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-600">Farm</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-600">Date Triggered</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-600">Rainfall (mm)</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-600">Severity</th>
@@ -200,10 +207,11 @@ export default async function AnalyticsPage() {
                   {triggerEvents.map((trigger) => (
                     <tr key={trigger.id} className="border-b border-slate-100 hover:bg-slate-50">
                       <td className="py-3 px-4 font-mono text-xs text-slate-600">{trigger.policyId.slice(-8)}</td>
+                      <td className="py-3 px-4 text-slate-600">{trigger.farm.locationName}</td>
                       <td className="py-3 px-4 text-slate-600">{trigger.dateTriggered.toLocaleString()}</td>
                       <td className="py-3 px-4 text-slate-800 font-medium">{trigger.rainfallRecorded}mm</td>
                       <td className="py-3 px-4">
-                        <Badge variant={trigger.severity === "SEVERE" ? "danger" : "warning"}>
+                        <Badge className={trigger.severity === "SEVERE" ? "bg-red-500 text-white border-none" : "bg-amber-500 text-white border-none"}>
                           {trigger.severity}
                         </Badge>
                       </td>

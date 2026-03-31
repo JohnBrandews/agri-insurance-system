@@ -17,3 +17,7 @@ body {
     @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-glass rounded-2xl;
   }
 }
+
+.leaflet-container {
+  z-index: 1;
+}

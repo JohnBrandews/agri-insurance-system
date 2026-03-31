@@ -118,7 +118,7 @@ export default async function InsurersPage({
               <div className="flex items-center space-x-3 mb-6">
                 <div className="h-8 w-1 bg-amber-500 rounded-full" />
                 <h3 className="text-xl font-bold text-slate-800">New Applications</h3>
-                <Badge variant="warning">{pending.length}</Badge>
+                <Badge className="bg-amber-500 text-white border-none">{pending.length}</Badge>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {pending.map(insurer => (

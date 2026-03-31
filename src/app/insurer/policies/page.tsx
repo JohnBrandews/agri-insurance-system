@@ -101,7 +101,7 @@ export default async function PoliciesPage() {
                     <CardTitle className="text-lg">{policy.name}</CardTitle>
                     <p className="text-sm text-slate-500 mt-1">{policy.cropType}</p>
                   </div>
-                  <Badge variant={policy.status === "ACTIVE" ? "success" : "outline"}>
+                  <Badge className={policy.status === "ACTIVE" ? "bg-emerald-500 text-white border-none" : "border-slate-200"}>
                     {policy.status}
                   </Badge>
                 </div>

@@ -7,6 +7,7 @@ import { requireRole } from "@/lib/session"
 import { FarmMapClient } from "@/components/FarmMapClient"
 import { AddAgentForm } from "@/components/AddAgentForm"
 import Link from "next/link"
+import { resolveFarmCoordinates } from "@/lib/kenya-locations"
 
 export default async function InsurerDashboard() {
   const session = await requireRole(["INSURER"])
@@ -15,7 +16,7 @@ export default async function InsurerDashboard() {
   // 1. Fetch Company Policies
   const policies = await prisma.policy.findMany({
     where: { companyId },
-    include: { enrollments: { include: { farm: true, farmer: { include: { user: true } } } } }
+    include: { enrollments: { include: { farm: true, farmer: { include: { user: true, agent: true } } } } }
   })
 
   // 2. Aggregate Metrics
@@ -32,15 +33,19 @@ export default async function InsurerDashboard() {
       totalAcreage += enroll.farm.acreage
       totalPremiums += (policy.premiumRate * enroll.farm.acreage * 1000)
 
-      allFarms.push({
-        id: enroll.farm.id,
-        locationName: enroll.farm.locationName,
-        acreage: enroll.farm.acreage,
-        cropType: enroll.farm.cropType,
-        status: enroll.farm.status,
-        coordinates: JSON.parse(enroll.farm.polygonCoordinates || "[]"),
-        farmerName: enroll.farmer.user.name
-      })
+        allFarms.push({
+          id: enroll.farm.id,
+          locationName: enroll.farm.locationName,
+          acreage: enroll.farm.acreage,
+          cropType: enroll.farm.cropType,
+          status: enroll.farm.status,
+          coordinates: resolveFarmCoordinates(
+            enroll.farm.polygonCoordinates || "[]",
+            enroll.farmer.agent?.region,
+            `${enroll.farmer.id}-${enroll.farm.id}`
+          ),
+          farmerName: enroll.farmer.user.name
+        })
     })
   })
 
@@ -170,7 +175,7 @@ export default async function InsurerDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Your Insurance Policies</CardTitle>
-            <Badge variant="outline">{policies.length} Active</Badge>
+            <Badge className="border-slate-200">{policies.length} Active</Badge>
           </CardHeader>
           <CardContent>
             {policies.length === 0 ? (
@@ -190,7 +195,7 @@ export default async function InsurerDashboard() {
                           <h4 className="font-semibold text-slate-800">{policy.name}</h4>
                           <p className="text-xs text-slate-500">{policy.cropType} • {policy.region}</p>
                         </div>
-                        <Badge variant={policy.status === "ACTIVE" ? "success" : "outline"} className="text-xs">
+                        <Badge className={`${policy.status === "ACTIVE" ? "bg-emerald-500 text-white border-none" : "border-slate-200"} text-xs`}>
                           {policy.status}
                         </Badge>
                       </div>

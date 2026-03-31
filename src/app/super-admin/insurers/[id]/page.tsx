@@ -5,9 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Shield, Users, FileText, ChevronLeft, MapPin } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import dynamic from "next/dynamic"
-
-const Map = dynamic(() => import("@/components/Map"), { ssr: false })
+const LeafletMap = dynamic(() => import("@/components/LeafletMap"), { ssr: false })
 
 export default async function InsurerDetailsPage({ params }: { params: { id: string } }) {
   await requireRole(["SUPER_ADMIN"])
@@ -23,7 +21,7 @@ export default async function InsurerDetailsPage({ params }: { params: { id: str
         include: { 
           user: true, 
           farmersRegistered: { 
-            include: { user: true, farms: { include: { farmer: { include: { user: true } } } }, enrollments: true } 
+            include: { user: true, farms: true, enrollments: true } 
           } 
         }
       }
@@ -33,27 +31,29 @@ export default async function InsurerDetailsPage({ params }: { params: { id: str
   if (!insurer) return <div>Insurer not found</div>
 
   const allFarmers = insurer.agents.flatMap(a => a.farmersRegistered)
-  const allFarms = allFarmers.flatMap(f => f.farms)
   
-  // Prepare map markers for farms
-  const farmMarkers = allFarms.map(f => {
-    try {
-      const coords = JSON.parse(f.polygonCoordinates)
-      // Normalize to [lat, lng] array if it's an object {lat, lng}
-      if (Array.isArray(coords) && coords.length > 0) {
-        const first = coords[0]
-        const pos = (first.lat !== undefined) ? [first.lat, first.lng] : first
-        return {
-          position: pos as [number, number],
-          label: `${f.farmer.user.name}'s ${f.cropType} farm`
-        }
+  // Prepare map data for LeafletMap
+  const mapFarms = allFarmers.flatMap(farmer => 
+    farmer.farms.map(farm => {
+      let coordinates: { lat: number; lng: number }[] = []
+      try {
+        const parsed = JSON.parse(farm.polygonCoordinates)
+        coordinates = Array.isArray(parsed) ? parsed : [parsed]
+      } catch (e) {
+        console.error("Error parsing coordinates for farm:", farm.id, e)
       }
-    } catch (e) {}
-    return null
-  }).filter(Boolean) as any[]
 
-  // Calculate center based on first marker or default to Kenya central
-  const mapCenter = farmMarkers.length > 0 ? farmMarkers[0].position : [-1.286389, 36.817223]
+      return {
+        id: farm.id,
+        locationName: farm.locationName,
+        acreage: farm.acreage,
+        cropType: farm.cropType,
+        status: farm.status,
+        coordinates,
+        farmerName: (farmer as any).user.name
+      }
+    })
+  )
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
@@ -136,8 +136,11 @@ export default async function InsurerDetailsPage({ params }: { params: { id: str
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="h-[400px] rounded-xl overflow-hidden border border-slate-200">
-                <Map markers={farmMarkers} center={mapCenter} zoom={farmMarkers.length > 0 ? 12 : 6} />
+              <div className="h-[400px] rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
+                <LeafletMap 
+                  farms={mapFarms as any} 
+                  onSelectFarm={(farm) => console.log("Selected farm:", farm)} 
+                />
               </div>
               <div className="overflow-x-auto border border-slate-200 rounded-xl">
                 <table className="w-full text-sm">
@@ -156,7 +159,7 @@ export default async function InsurerDetailsPage({ params }: { params: { id: str
                         <td className="py-3 px-4">{(f as any).farms.reduce((sum: number, farm: any) => sum + farm.acreage, 0)} acres</td>
                         <td className="py-3 px-4 font-semibold text-blue-600">{(f as any).enrollments.length} Policies</td>
                         <td className="py-3 px-4">
-                          <Badge variant="success">ACTIVE</Badge>
+                          <Badge className="bg-emerald-500 text-white border-none">ACTIVE</Badge>
                         </td>
                       </tr>
                     ))}

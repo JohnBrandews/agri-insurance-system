@@ -4,21 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { Phone, User, MapPin, Mail, CreditCard } from "lucide-react"
-
-const KENYAN_REGIONS: Record<string, string[]> = {
-  "Nairobi": ["Westlands", "Dagoretti", "Kibra", "Roysambu", "Kasarani", "Embakasi"],
-  "Mombasa": ["Changamwe", "Jomvu", "Kisauni", "Nyali", "Likoni", "Mvita"],
-  "Kisumu": ["Kisumu Central", "Kisumu East", "Kisumu West", "Seme", "Nyando"],
-  "Nakuru": ["Nakuru East", "Nakuru West", "Naivasha", "Gilgil", "Molo"],
-  "Uasin Gishu": ["Eldoret East", "Eldoret West", "Eldoret South", "Turbo"],
-  "Kiambu": ["Kiambu Town", "Thika Town", "Ruiru", "Juja", "Kikuyu"],
-  "Meru": ["Imenti North", "Imenti South", "Tigania", "Igembe"],
-  "Nyeri": ["Nyeri Town", "Othaya", "Mukurweini", "Tetu"],
-  "Kakamega": ["Lurambi", "Mumias", "Butere", "Lugari"],
-  "Murang'a": ["Kandara", "Kiharu", "Kangema", "Gatanga"],
-  "Machakos": ["Machakos Town", "Mavoko", "Matungulu", "Kathiani"],
-  "Kilifi": ["Malindi", "Magarini", "Ganze", "Kaloleni"]
-}
+import { COUNTY_NAMES, KENYA_LOCATIONS } from "@/lib/kenya-locations"
 
 export function AddAgentForm({ companyId }: { companyId: string }) {
   const [name, setName] = useState("")
@@ -149,7 +135,7 @@ export function AddAgentForm({ companyId }: { companyId: string }) {
               required
             >
               <option value="">Select County</option>
-              {Object.keys(KENYAN_REGIONS).map(c => (
+              {COUNTY_NAMES.map(c => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
@@ -166,7 +152,7 @@ export function AddAgentForm({ companyId }: { companyId: string }) {
               disabled={!county}
             >
               <option value="">Select Constituency</option>
-              {county && KENYAN_REGIONS[county].map(s => (
+              {county && KENYA_LOCATIONS[county]?.constituencies.map(s => (
                 <option key={s} value={s}>{s}</option>
               ))}
             </select>

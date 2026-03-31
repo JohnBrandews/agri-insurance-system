@@ -91,7 +91,7 @@ export default async function AgentFarmersPage({ params }: { params: Promise<{ i
                         <td className="py-4 px-6">
                           <div className="flex flex-wrap gap-1">
                             {farmer.enrollments.map((e: any) => (
-                              <Badge key={e.id} variant="outline" className="bg-blue-50 text-blue-700 border-blue-100">
+                              <Badge key={e.id} className="bg-blue-50 text-blue-700 border-blue-100">
                                 {e.policy.name}
                               </Badge>
                             ))}
@@ -101,7 +101,7 @@ export default async function AgentFarmersPage({ params }: { params: Promise<{ i
                           </div>
                         </td>
                         <td className="py-4 px-6">
-                          <Badge variant="success">ACTIVE</Badge>
+                          <Badge className="bg-emerald-500 text-white border-none">ACTIVE</Badge>
                         </td>
                       </tr>
                     ))

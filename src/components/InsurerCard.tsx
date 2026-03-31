@@ -47,7 +47,7 @@ export function InsurerCard({ insurer }: InsurerCardProps) {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Badge variant={isApproved ? "success" : isPending ? "warning" : "danger"}>
+            <Badge className={isApproved ? "bg-emerald-500 text-white" : isPending ? "bg-amber-500 text-white" : "bg-red-500 text-white"}>
               {insurer.status}
             </Badge>
             <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">

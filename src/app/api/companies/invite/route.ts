@@ -1,51 +1,70 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { Prisma } from "@prisma/client"
 import { generateSetupToken, sendSetupEmail } from "@/lib/auth-utils"
 
 export async function POST(req: Request) {
   try {
     const { name, email } = await req.json()
+    const normalizedName = typeof name === "string" ? name.trim() : ""
+    const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : ""
 
-    if (!name || !email) {
+    if (!normalizedName || !normalizedEmail) {
       return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 })
     }
 
-    // 1. Create Insurance Company
-    const company = await prisma.insuranceCompany.create({
-      data: {
-        name,
-        status: "APPROVED" // Pre-approved when admin invites them
-      }
+    const existingUser = await prisma.user.findUnique({
+      where: { email: normalizedEmail }
     })
 
-    // 2. Create the Insurer User (without password initially)
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: "N/A", // They must set it up
-        name: `Admin of ${name}`,
-        role: "INSURER",
-        companyId: company.id
-      }
-    })
+    if (existingUser) {
+      return NextResponse.json(
+        { success: false, error: "A user with this email already exists" },
+        { status: 409 }
+      )
+    }
 
-    // 3. Generate Setup Token (Expires in 24 hours)
+    // Keep company/user/token creation atomic so we do not create a company if user creation fails.
     const setupToken = generateSetupToken()
-    await prisma.verificationToken.create({
-      data: {
-        identifier: email,
-        token: setupToken,
-        role: "INSURER",
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
-      }
+    await prisma.$transaction(async (tx) => {
+      const company = await tx.insuranceCompany.create({
+        data: {
+          name: normalizedName,
+          status: "APPROVED"
+        }
+      })
+
+      await tx.user.create({
+        data: {
+          email: normalizedEmail,
+          password: "N/A",
+          name: `Admin of ${normalizedName}`,
+          role: "INSURER",
+          companyId: company.id
+        }
+      })
+
+      await tx.verificationToken.create({
+        data: {
+          identifier: normalizedEmail,
+          token: setupToken,
+          role: "INSURER",
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+        }
+      })
     })
 
-    // 4. Send Mock Email (Brevo integration placeholder)
-    await sendSetupEmail(email, setupToken, "insurer")
+    await sendSetupEmail(normalizedEmail, setupToken, "insurer")
 
     return NextResponse.json({ success: true, message: "Insurer invited successfully. Email sent." })
-
   } catch (error: any) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return NextResponse.json(
+        { success: false, error: "A user with this email already exists" },
+        { status: 409 }
+      )
+    }
+
     console.error("Insurer Invite Error:", error)
     return NextResponse.json({ success: false, error: error.message }, { status: 500 })
   }

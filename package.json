@@ -24,7 +24,7 @@
     "nodemailer": "^6.9.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-leaflet": "^5.0.0",
+    "react-leaflet": "^4.2.1",
     "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
@@ -42,6 +42,6 @@
     "typescript": "^5.3.3"
   },
   "prisma": {
-    "seed": "ts-node --compilerOptions {\\\"module\\\":\\\"CommonJS\\\"} prisma/seed.ts"
+    "seed": "node ./node_modules/ts-node/dist/bin.js --project prisma/tsconfig.seed.json prisma/seed.ts"
   }
 }

@@ -5,21 +5,7 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { Phone, User, MapPin, Mail, CreditCard, X } from "lucide-react"
 import { updateAgentDetails } from "@/app/insurer/actions"
-
-const KENYAN_REGIONS: Record<string, string[]> = {
-  "Nairobi": ["Westlands", "Dagoretti", "Kibra", "Roysambu", "Kasarani", "Embakasi"],
-  "Mombasa": ["Changamwe", "Jomvu", "Kisauni", "Nyali", "Likoni", "Mvita"],
-  "Kisumu": ["Kisumu Central", "Kisumu East", "Kisumu West", "Seme", "Nyando"],
-  "Nakuru": ["Nakuru East", "Nakuru West", "Naivasha", "Gilgil", "Molo"],
-  "Uasin Gishu": ["Eldoret East", "Eldoret West", "Eldoret South", "Turbo"],
-  "Kiambu": ["Kiambu Town", "Thika Town", "Ruiru", "Juja", "Kikuyu"],
-  "Meru": ["Imenti North", "Imenti South", "Tigania", "Igembe"],
-  "Nyeri": ["Nyeri Town", "Othaya", "Mukurweini", "Tetu"],
-  "Kakamega": ["Lurambi", "Mumias", "Butere", "Lugari"],
-  "Murang'a": ["Kandara", "Kiharu", "Kangema", "Gatanga"],
-  "Machakos": ["Machakos Town", "Mavoko", "Matungulu", "Kathiani"],
-  "Kilifi": ["Malindi", "Magarini", "Ganze", "Kaloleni"]
-}
+import { COUNTY_NAMES, KENYA_LOCATIONS, parseRegion } from "@/lib/kenya-locations"
 
 interface EditAgentFormProps {
   agent: {
@@ -40,8 +26,9 @@ export function EditAgentForm({ agent, onClose }: EditAgentFormProps) {
   const [email, setEmail] = useState(agent.user.email)
   const [phone, setPhone] = useState(agent.phone || "")
   const [idNumber, setIdNumber] = useState(agent.idNumber || "")
-  const [county, setCounty] = useState(agent.region.split(", ")[0] || "")
-  const [constituency, setConstituency] = useState(agent.region.split(", ")[1] || "")
+  const { county: initialCounty, constituency: initialConstituency } = parseRegion(agent.region)
+  const [county, setCounty] = useState(initialCounty)
+  const [constituency, setConstituency] = useState(initialConstituency)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
   const router = useRouter()
@@ -153,7 +140,7 @@ export function EditAgentForm({ agent, onClose }: EditAgentFormProps) {
               required
             >
               <option value="">Select County</option>
-              {Object.keys(KENYAN_REGIONS).map(countyName => (
+              {COUNTY_NAMES.map(countyName => (
                 <option key={countyName} value={countyName}>{countyName}</option>
               ))}
             </select>
@@ -170,7 +157,7 @@ export function EditAgentForm({ agent, onClose }: EditAgentFormProps) {
               disabled={!county}
             >
               <option value="">Select Constituency</option>
-              {county && KENYAN_REGIONS[county]?.map(constName => (
+              {county && KENYA_LOCATIONS[county]?.constituencies.map(constName => (
                 <option key={constName} value={constName}>{constName}</option>
               ))}
             </select>

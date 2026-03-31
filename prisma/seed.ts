@@ -7,6 +7,22 @@ function hashPassword(password: string): string {
   return crypto.createHash('sha256').update(password).digest('hex')
 }
 
+function getFarmCenter(coordinates: { lat: number; lng: number }[]) {
+  const totals = coordinates.reduce(
+    (acc, coordinate) => {
+      acc.lat += coordinate.lat
+      acc.lng += coordinate.lng
+      return acc
+    },
+    { lat: 0, lng: 0 }
+  )
+
+  return {
+    lat: totals.lat / coordinates.length,
+    lng: totals.lng / coordinates.length,
+  }
+}
+
 async function main() {
   // Clear optional old data first if needed, passing dependencies
   console.log("Seeding started. Overwriting basic data...")
@@ -36,7 +52,7 @@ async function main() {
       status: 'APPROVED',
     },
   })
-  
+
   // Create Insurer Admin User
   const insurerUser = await prisma.user.upsert({
     where: { email: 'insurer@jubilee.co.ke' },
@@ -123,23 +139,31 @@ async function main() {
   })
   console.log("Farmer seeded with phone number:", farmer.phone)
 
-  // Create Farmer's Farm
+  // Create Farmer's Farm (Farmer 1 - Nakuru)
+  const farmOneCoordinates = [
+    { lat: -0.3031, lng: 36.0800 },
+    { lat: -0.3041, lng: 36.0810 },
+    { lat: -0.3051, lng: 36.0800 },
+    { lat: -0.3041, lng: 36.0790 }
+  ]
+  const farmOneCenter = getFarmCenter(farmOneCoordinates)
+
   const farm = await prisma.farm.upsert({
     where: { id: 'seed-farm-1' },
-    update: {},
+    update: {
+      polygonCoordinates: JSON.stringify(farmOneCoordinates),
+      latitude: farmOneCenter.lat,
+      longitude: farmOneCenter.lng,
+    },
     create: {
       id: 'seed-farm-1',
       farmerId: farmer.id,
       locationName: 'Subukia Maize Plot A',
       acreage: 2.5,
       cropType: 'Maize',
-      // Dummy mapping coordinates stringified
-      polygonCoordinates: JSON.stringify([
-        { lat: -0.1, lng: 36.1 },
-        { lat: -0.1, lng: 36.2 },
-        { lat: -0.2, lng: 36.2 },
-        { lat: -0.2, lng: 36.1 }
-      ]),
+      polygonCoordinates: JSON.stringify(farmOneCoordinates),
+      latitude: farmOneCenter.lat,
+      longitude: farmOneCenter.lng,
       status: 'HEALTHY',
     },
   })
@@ -156,6 +180,99 @@ async function main() {
       status: 'ACTIVE',
     },
   })
+
+  // 7. Add More Farmers for Map Diversity
+  // Farmer 2 - Makueni
+  const farmer2User = await prisma.user.upsert({
+    where: { email: 'farmer2@makueni.local' },
+    update: {},
+    create: {
+      email: 'farmer2@makueni.local',
+      password: 'n/a',
+      role: 'FARMER',
+      name: 'Peter Musyoka',
+    },
+  })
+
+  const farmer2 = await prisma.farmer.upsert({
+    where: { userId: farmer2User.id },
+    update: {},
+    create: {
+      userId: farmer2User.id,
+      phone: '0722000000',
+      agentId: agent.id,
+    },
+  })
+
+  const farmTwoCoordinates = [{ lat: -1.8044, lng: 37.6243 }]
+  const farmTwoCenter = getFarmCenter(farmTwoCoordinates)
+
+  const farm2 = await prisma.farm.upsert({
+    where: { id: 'seed-farm-2' },
+    update: {
+      polygonCoordinates: JSON.stringify(farmTwoCoordinates),
+      latitude: farmTwoCenter.lat,
+      longitude: farmTwoCenter.lng,
+    },
+    create: {
+      id: 'seed-farm-2',
+      farmerId: farmer2.id,
+      locationName: 'Wote Dryland Plot',
+      acreage: 5.0,
+      cropType: 'Green Grams',
+      polygonCoordinates: JSON.stringify(farmTwoCoordinates),
+      latitude: farmTwoCenter.lat,
+      longitude: farmTwoCenter.lng,
+      status: 'RISK',
+    },
+  })
+
+  // Farmer 3 - Kisumu
+  const farmer3User = await prisma.user.upsert({
+    where: { email: 'farmer3@kisumu.local' },
+    update: {},
+    create: {
+      email: 'farmer3@kisumu.local',
+      password: 'n/a',
+      role: 'FARMER',
+      name: 'Jane Otieno',
+    },
+  })
+
+  const farmer3 = await prisma.farmer.upsert({
+    where: { userId: farmer3User.id },
+    update: {},
+    create: {
+      userId: farmer3User.id,
+      phone: '0733000000',
+      agentId: agent.id,
+    },
+  })
+
+  const farmThreeCoordinates = [{ lat: -0.1022, lng: 34.7617 }]
+  const farmThreeCenter = getFarmCenter(farmThreeCoordinates)
+
+  const farm3 = await prisma.farm.upsert({
+    where: { id: 'seed-farm-3' },
+    update: {
+      polygonCoordinates: JSON.stringify(farmThreeCoordinates),
+      latitude: farmThreeCenter.lat,
+      longitude: farmThreeCenter.lng,
+    },
+    create: {
+      id: 'seed-farm-3',
+      farmerId: farmer3.id,
+      locationName: 'Kibos Rice Field',
+      acreage: 3.2,
+      cropType: 'Rice',
+      polygonCoordinates: JSON.stringify(farmThreeCoordinates),
+      latitude: farmThreeCenter.lat,
+      longitude: farmThreeCenter.lng,
+      status: 'TRIGGERED',
+    },
+  })
+
+  console.log("Additional farmers and farms seeded.")
   console.log("Enrollment and policy mapped.")
 
   console.log("Seeding complete.")

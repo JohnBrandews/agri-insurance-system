@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { generateOTP, sendSMS, hashPassword } from "@/lib/auth-utils"
+import { generateOTP, sendSMS, hashPassword, OTP_EXPIRY_MINUTES } from "@/lib/auth-utils"
 
 export async function POST(req: Request) {
   try {
@@ -20,19 +20,23 @@ export async function POST(req: Request) {
       // Generate 4-digit OTP
       const otp = generateOTP()
       
-      // Store OTP in DB (expires in 10 minutes)
+      const otpExpiresAt = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000)
+
+      // Store OTP in DB
       await prisma.verificationToken.upsert({
         where: { token: otp },
         update: {
           identifier: body.phone,
+          type: "OTP",
           role: "FARMER",
-          expires: new Date(Date.now() + 10 * 60000)
+          expires: otpExpiresAt
         },
         create: {
           identifier: body.phone,
           token: otp,
+          type: "OTP",
           role: "FARMER",
-          expires: new Date(Date.now() + 10 * 60000) // 10 minutes
+          expires: otpExpiresAt
         }
       })
 

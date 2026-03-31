@@ -1,34 +1,55 @@
-import crypto from 'crypto';
+import crypto from "crypto";
+import nodemailer from "nodemailer";
 
-// Simple mockup hash for Dev MVP (No bcrypt/argon2 to save install weight)
+// Simple mock hash for the MVP to avoid extra install weight.
 export function hashPassword(password: string): string {
-  return crypto.createHash('sha256').update(password).digest('hex');
+  return crypto.createHash("sha256").update(password).digest("hex");
 }
 
-import nodemailer from 'nodemailer';
-
-// Generate a random 64-character hex setup token for emails
+// Generate a random 64-character hex setup token for emails.
 export function generateSetupToken(): string {
-  return crypto.randomBytes(32).toString('hex');
+  return crypto.randomBytes(32).toString("hex");
 }
 
-// Generate a secure 4-digit OTP
+export const OTP_EXPIRY_MINUTES = 10;
+
+// Generate a secure 4-digit OTP.
 export function generateOTP(): string {
   return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
-// Real Email Service (Brevo Integration)
-export async function sendSetupEmail(email: string, token: string, role: string) {
-  const setupUrl = `http://localhost:3000/setup-password?token=${token}&role=${role}`;
-  
-  const transporter = nodemailer.createTransport({
+function createTransporter() {
+  return nodemailer.createTransport({
     host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '2525'),
+    port: parseInt(process.env.SMTP_PORT || "2525"),
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     },
   });
+}
+
+export async function sendEmailMessage(params: { to: string; subject: string; body: string }) {
+  const mailOptions = {
+    from: process.env.SMTP_FROM,
+    to: params.to,
+    subject: params.subject,
+    text: params.body,
+    html: `<div style="font-family: Arial, sans-serif; white-space: pre-line;">${params.body}</div>`,
+  };
+
+  try {
+    await createTransporter().sendMail(mailOptions);
+    return true;
+  } catch (error) {
+    console.error("[EMAIL SEND FAILED]:", error);
+    return false;
+  }
+}
+
+// Real Email Service (Brevo Integration)
+export async function sendSetupEmail(email: string, token: string, role: string) {
+  const setupUrl = `http://localhost:3000/setup-password?token=${token}&role=${role}`;
 
   const mailOptions = {
     from: process.env.SMTP_FROM,
@@ -46,34 +67,24 @@ export async function sendSetupEmail(email: string, token: string, role: string)
         <hr style="border: none; border-top: 1px solid #efeef1; margin: 30px 0;" />
         <p style="color: #999; font-size: 11px;">If you didn't request this, you can safely ignore this email.</p>
       </div>
-    `
+    `,
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`✅ [BREVO EMAIL SENT] Message ID: ${info.messageId}`);
+    const info = await createTransporter().sendMail(mailOptions);
+    console.log(`[BREVO EMAIL SENT] Message ID: ${info.messageId}`);
     return true;
   } catch (error) {
-    console.error(`❌ [BREVO EMAIL FAILED]:`, error);
+    console.error("[BREVO EMAIL FAILED]:", error);
     return false;
   }
 }
 
-// Suspension Email
 export async function sendSuspensionEmail(email: string, companyName: string) {
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '2525'),
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-
   const mailOptions = {
     from: process.env.SMTP_FROM,
     to: email,
-    subject: `Important Update regarding your partnership with FarmShield`,
+    subject: "Important Update regarding your partnership with FarmShield",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px;">
         <h2 style="color: #dc2626;">Partnership Status Update</h2>
@@ -83,33 +94,23 @@ export async function sendSuspensionEmail(email: string, companyName: string) {
         <hr style="border: none; border-top: 1px solid #efeef1; margin: 30px 0;" />
         <p style="color: #999; font-size: 11px;">FarmShield Administration Team</p>
       </div>
-    `
+    `,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await createTransporter().sendMail(mailOptions);
     return true;
   } catch (error) {
-    console.error(`❌ [SUSPENSION EMAIL FAILED]:`, error);
+    console.error("[SUSPENSION EMAIL FAILED]:", error);
     return false;
   }
 }
 
-// Agent Suspension Email
 export async function sendAgentSuspensionEmail(email: string, agentName: string) {
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '2525'),
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-
   const mailOptions = {
     from: process.env.SMTP_FROM,
     to: email,
-    subject: `Your Agent Account has been Suspended`,
+    subject: "Your Agent Account has been Suspended",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px;">
         <h2 style="color: #dc2626;">Account Suspended</h2>
@@ -119,33 +120,23 @@ export async function sendAgentSuspensionEmail(email: string, agentName: string)
         <hr style="border: none; border-top: 1px solid #efeef1; margin: 30px 0;" />
         <p style="color: #999; font-size: 11px;">FarmShield Support Team</p>
       </div>
-    `
+    `,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await createTransporter().sendMail(mailOptions);
     return true;
   } catch (error) {
-    console.error(`❌ [AGENT SUSPENSION EMAIL FAILED]:`, error);
+    console.error("[AGENT SUSPENSION EMAIL FAILED]:", error);
     return false;
   }
 }
 
-// Agent Reinstatement Email
 export async function sendAgentReinstatementEmail(email: string, agentName: string) {
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '2525'),
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-
   const mailOptions = {
     from: process.env.SMTP_FROM,
     to: email,
-    subject: `Your Agent Account has been Reinstated`,
+    subject: "Your Agent Account has been Reinstated",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px;">
         <h2 style="color: #46A316;">Account Reinstated</h2>
@@ -155,29 +146,19 @@ export async function sendAgentReinstatementEmail(email: string, agentName: stri
         <hr style="border: none; border-top: 1px solid #efeef1; margin: 30px 0;" />
         <p style="color: #999; font-size: 11px;">FarmShield Support Team</p>
       </div>
-    `
+    `,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await createTransporter().sendMail(mailOptions);
     return true;
   } catch (error) {
-    console.error(`❌ [AGENT REINSTATEMENT EMAIL FAILED]:`, error);
+    console.error("[AGENT REINSTATEMENT EMAIL FAILED]:", error);
     return false;
   }
 }
 
-// Policy Deletion Email
 export async function sendPolicyDeletionEmail(email: string, policyName: string, companyName: string) {
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '2525'),
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-
   const mailOptions = {
     from: process.env.SMTP_FROM,
     to: email,
@@ -191,33 +172,28 @@ export async function sendPolicyDeletionEmail(email: string, policyName: string,
         <hr style="border: none; border-top: 1px solid #efeef1; margin: 30px 0;" />
         <p style="color: #999; font-size: 11px;">FarmShield Administration Team</p>
       </div>
-    `
+    `,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await createTransporter().sendMail(mailOptions);
     return true;
   } catch (error) {
-    console.error(`❌ [POLICY DELETION EMAIL FAILED]:`, error);
+    console.error("[POLICY DELETION EMAIL FAILED]:", error);
     return false;
   }
 }
 
-// Deletion Email
 export async function sendDeletionEmail(email: string, name: string, type: "ADMIN" | "AGENT") {
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '2525'),
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
+  const subject =
+    type === "ADMIN"
+      ? "Account Terminated - FarmShield Partnership Ended"
+      : "Account Terminated - FarmShield Partnership Ended";
 
   const mailOptions = {
     from: process.env.SMTP_FROM,
     to: email,
-    subject: `Account Terminated - FarmShield Partnership Ended`,
+    subject,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px;">
         <h2 style="color: #dc2626;">Partnership Terminated</h2>
@@ -227,23 +203,31 @@ export async function sendDeletionEmail(email: string, name: string, type: "ADMI
         <hr style="border: none; border-top: 1px solid #efeef1; margin: 30px 0;" />
         <p style="color: #999; font-size: 11px;">FarmShield Administration Team</p>
       </div>
-    `
+    `,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await createTransporter().sendMail(mailOptions);
     return true;
   } catch (error) {
-    console.error(`❌ [DELETION EMAIL FAILED]:`, error);
+    console.error("[DELETION EMAIL FAILED]:", error);
     return false;
   }
 }
 
 // Mock SMS Service (Africa's Talking Substitute)
 export async function sendSMS(phone: string, otp: string) {
-  console.log(`\n================================`);
-  console.log(`📱 [MOCK SMS SENT TO]: ${phone}`);
-  console.log(`🔐 FarmShield Login OTP: ${otp}. Valid for 24 hours.`);
-  console.log(`================================\n`);
+  console.log("\n================================");
+  console.log(`[MOCK SMS SENT TO]: ${phone}`);
+  console.log(`FarmShield Login OTP: ${otp}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`);
+  console.log("================================\n");
+  return true;
+}
+
+export async function sendSMSMessage(phone: string, message: string) {
+  console.log("\n================================");
+  console.log(`[MOCK SMS SENT TO]: ${phone}`);
+  console.log(message);
+  console.log("================================\n");
   return true;
 }

@@ -4,10 +4,20 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Map, Camera, CheckCircle2, ChevronRight, ChevronLeft, MapPin } from "lucide-react"
+import { Map, Camera, CheckCircle2, ChevronRight, ChevronLeft } from "lucide-react"
 import { registerFarmer } from "./actions"
+import { COUNTY_NAMES, KENYA_LOCATIONS } from "@/lib/kenya-locations"
+import { FarmBoundaryTracker } from "@/components/FarmBoundaryTracker"
 
-export function RegisterClient({ policies }: { policies: any[] }) {
+export function RegisterClient({
+  policies,
+  defaultCounty,
+  defaultConstituency,
+}: {
+  policies: any[]
+  defaultCounty: string
+  defaultConstituency: string
+}) {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   
@@ -16,26 +26,12 @@ export function RegisterClient({ policies }: { policies: any[] }) {
   const [phone, setPhone] = useState("")
   const [idNumber, setIdNumber] = useState("")
   const [policyId, setPolicyId] = useState(policies[0]?.id || "")
+  const [county, setCounty] = useState(defaultCounty)
+  const [constituency, setConstituency] = useState(defaultConstituency)
   const [acreage, setAcreage] = useState("2.5")
   const [cropType, setCropType] = useState("Maize")
 
-  // Mock GPS tracking state
-  const [isMapping, setIsMapping] = useState(false)
   const [coordinates, setCoordinates] = useState<{lat: number, lng: number}[]>([])
-
-  const handleStartMapping = () => {
-    setIsMapping(true)
-    // Simulate walking a polygon over 2 seconds
-    setTimeout(() => {
-      setCoordinates([
-        { lat: -0.12, lng: 36.15 },
-        { lat: -0.12, lng: 36.16 },
-        { lat: -0.13, lng: 36.16 },
-        { lat: -0.13, lng: 36.15 }
-      ])
-      setIsMapping(false)
-    }, 2000)
-  }
 
   const handleSubmit = async () => {
     setLoading(true)
@@ -45,9 +41,11 @@ export function RegisterClient({ policies }: { policies: any[] }) {
         phone,
         idNumber,
         policyId,
+        county,
+        constituency,
         acreage: parseFloat(acreage),
         cropType,
-        coordinates: coordinates.length > 0 ? coordinates : [{ lat: 0, lng: 0 }] // dummy fallback
+        coordinates
       })
       setStep(5) // Success step
     } catch (err) {
@@ -75,6 +73,40 @@ export function RegisterClient({ policies }: { policies: any[] }) {
               <label className="block text-sm font-medium text-slate-700 mb-1">National ID</label>
               <input type="text" value={idNumber} onChange={e => setIdNumber(e.target.value)} className="w-full rounded-xl border-slate-200 px-4 py-3 bg-white/50 focus:ring-2 focus:ring-primary shadow-sm" placeholder="ID Number" />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">County</label>
+              <select
+                value={county}
+                onChange={e => {
+                  setCounty(e.target.value)
+                  setConstituency("")
+                  setCoordinates([])
+                }}
+                className="w-full rounded-xl border-slate-200 px-4 py-3 bg-white/50 focus:ring-2 focus:ring-primary shadow-sm"
+              >
+                <option value="">Select county</option>
+                {COUNTY_NAMES.map((countyName) => (
+                  <option key={countyName} value={countyName}>{countyName}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Constituency</label>
+              <select
+                value={constituency}
+                onChange={e => {
+                  setConstituency(e.target.value)
+                  setCoordinates([])
+                }}
+                disabled={!county}
+                className="w-full rounded-xl border-slate-200 px-4 py-3 bg-white/50 focus:ring-2 focus:ring-primary shadow-sm disabled:opacity-50"
+              >
+                <option value="">Select constituency</option>
+                {county && KENYA_LOCATIONS[county]?.constituencies.map((constituencyName) => (
+                  <option key={constituencyName} value={constituencyName}>{constituencyName}</option>
+                ))}
+              </select>
+            </div>
           </div>
         )
       case 2:
@@ -93,33 +125,35 @@ export function RegisterClient({ policies }: { policies: any[] }) {
               <input type="text" value={cropType} onChange={e => setCropType(e.target.value)} className="w-full rounded-xl border-slate-200 px-4 py-3 bg-white/50 focus:ring-2 focus:ring-primary shadow-sm" placeholder="e.g. Maize" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Expected Acreage</label>
-              <input type="number" step="0.1" value={acreage} onChange={e => setAcreage(e.target.value)} className="w-full rounded-xl border-slate-200 px-4 py-3 bg-white/50 focus:ring-2 focus:ring-primary shadow-sm" placeholder="2.5" />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Estimated Acreage</label>
+              <input
+                type="number"
+                step="0.1"
+                value={acreage}
+                onChange={e => setAcreage(e.target.value)}
+                className="w-full rounded-xl border-slate-200 px-4 py-3 bg-white/50 focus:ring-2 focus:ring-primary shadow-sm"
+                placeholder="Auto-filled after GPS mapping"
+              />
+              <p className="text-xs text-slate-500 mt-1">
+                This is updated automatically after the farm boundary is captured.
+              </p>
             </div>
           </div>
         )
       case 3:
         return (
           <div className="space-y-4">
-            <div className="bg-slate-100 rounded-2xl h-64 border-2 border-dashed border-slate-300 flex flex-col items-center justify-center relative overflow-hidden">
-              {coordinates.length > 0 ? (
-                <div className="absolute inset-0 bg-emerald-100/50 flex flex-col items-center justify-center text-emerald-700">
-                  <CheckCircle2 className="w-12 h-12 mb-2" />
-                  <p className="font-bold">GPS Area Mapped Successfully</p>
-                  <p className="text-sm mt-1">{coordinates.length} points calculated</p>
-                </div>
-              ) : (
-                <>
-                  <MapPin className={`w-10 h-10 text-primary mb-2 ${isMapping ? 'animate-bounce' : 'opacity-50'}`} />
-                  <p className="text-slate-500 font-medium text-sm text-center px-4">
-                    {isMapping ? "Walking the perimeter... acquiring GPS" : "Walk the perimeter of the farm to map GPS polygon bounds."}
-                  </p>
-                  <Button onClick={handleStartMapping} disabled={isMapping} className="mt-4 absolute bottom-4 shadow-xl">
-                    {isMapping ? "Tracking..." : "Start Tracking Bounds"}
-                  </Button>
-                </>
-              )}
-            </div>
+            <FarmBoundaryTracker
+              onBoundaryComplete={(trackedCoordinates, trackedAcreage) => {
+                setCoordinates(trackedCoordinates)
+                if (trackedAcreage > 0) {
+                  setAcreage(trackedAcreage.toFixed(2))
+                }
+              }}
+            />
+            <p className="text-xs text-slate-500 text-center">
+              GPS boundary will be saved under {constituency || "constituency"}, {county || "county"}.
+            </p>
           </div>
         )
       case 4:
@@ -138,6 +172,9 @@ export function RegisterClient({ policies }: { policies: any[] }) {
                 <span className="text-xs font-semibold text-emerald-700 text-center">Farm Photo Captured</span>
               </div>
             </div>
+            <p className="text-xs text-slate-500 text-center">
+              Location will be saved as {constituency || "constituency"}, {county || "county"}.
+            </p>
             <Button onClick={handleSubmit} disabled={loading} className="w-full mt-4 h-12 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg">
               {loading ? "Syncing to Blockchain..." : "Complete Registration"}
             </Button>
@@ -150,7 +187,7 @@ export function RegisterClient({ policies }: { policies: any[] }) {
               <CheckCircle2 className="w-10 h-10" />
             </div>
             <h3 className="text-2xl font-bold text-slate-800">Registration Complete</h3>
-            <p className="text-slate-500">The farmer data and GPS polygon have been synced securely to the platform.</p>
+            <p className="text-slate-500">The farmer data and mapped farm area have been synced securely to the platform.</p>
           </div>
         )
       default:
@@ -186,7 +223,10 @@ export function RegisterClient({ policies }: { policies: any[] }) {
             <Button variant="outline" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1}>
               <ChevronLeft className="w-4 h-4 mr-1" /> Back
             </Button>
-            <Button onClick={() => setStep(Math.min(4, step + 1))} disabled={step === 3 && coordinates.length === 0}>
+            <Button
+              onClick={() => setStep(Math.min(4, step + 1))}
+              disabled={(step === 1 && (!fullName || !phone || !idNumber || !county || !constituency)) || (step === 3 && coordinates.length === 0)}
+            >
               Next <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </div>

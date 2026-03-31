@@ -150,7 +150,7 @@ export default async function InsurerFarmersPage() {
                       <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Acreage</p>
                       <p className="font-bold text-slate-700">{farmer.farms.reduce((sum, f) => sum + f.acreage, 0).toFixed(1)} ac</p>
                     </div>
-                    <Badge variant={farmer.enrollments.some(e => e.status === "ACTIVE") ? "success" : "outline"}>
+                    <Badge className={farmer.enrollments.some(e => e.status === "ACTIVE") ? "bg-emerald-500 text-white border-none" : "border-slate-200"}>
                       {farmer.enrollments.some(e => e.status === "ACTIVE") ? "INSURED" : "UNINSURED"}
                     </Badge>
                   </div>

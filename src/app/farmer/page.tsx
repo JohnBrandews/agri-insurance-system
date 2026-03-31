@@ -153,7 +153,7 @@ export default async function FarmerDashboard() {
                       <p className="font-semibold text-slate-700">Payout #{payout.id.slice(-4)}</p>
                       <p className="text-xs text-slate-500">{payout.dateCalculated.toLocaleDateString()}</p>
                     </div>
-                    <Badge variant={payout.status === "PAID" ? "success" : "warning"}>
+                    <Badge className={payout.status === "PAID" ? "bg-emerald-500 text-white border-none" : "bg-amber-500 text-white border-none"}>
                       {payout.status} - ${payout.amount}
                     </Badge>
                   </div>

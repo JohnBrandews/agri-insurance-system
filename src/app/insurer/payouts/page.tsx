@@ -104,7 +104,7 @@ export default async function PayoutsPage() {
             <Clock className="w-5 h-5 mr-2 text-amber-500" />
             <CardTitle>Pending Payout Approvals</CardTitle>
           </div>
-          <Badge variant="warning">{pendingPayouts.length} Pending</Badge>
+          <Badge className="bg-amber-500 text-white border-none">{pendingPayouts.length} Pending</Badge>
         </CardHeader>
         <CardContent>
           {pendingPayouts.length === 0 ? (
@@ -182,10 +182,10 @@ export default async function PayoutsPage() {
                       <td className="py-3 px-4 text-slate-500">{payout.dateCalculated.toLocaleDateString()}</td>
                       <td className="py-3 px-4">
                         <Badge 
-                          variant={
-                            payout.status === "PAID" ? "success" : 
-                            payout.status === "APPROVED" ? "default" : 
-                            payout.status === "REJECTED" ? "danger" : "warning"
+                          className={
+                            payout.status === "PAID" ? "bg-emerald-500 text-white border-none" : 
+                            payout.status === "APPROVED" ? "bg-blue-500 text-white border-none" : 
+                            payout.status === "REJECTED" ? "bg-red-500 text-white border-none" : "bg-amber-500 text-white border-none"
                           }
                         >
                           {payout.status}

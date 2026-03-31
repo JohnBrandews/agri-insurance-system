@@ -147,7 +147,7 @@ export default async function FarmersPage() {
                   {farmer.enrollments.length > 0 && (
                     <div className="flex items-center justify-between">
                       <span className="text-slate-500 flex items-center">
-                        <Badge variant="success" className="text-xs">Active</Badge>
+                        <Badge className="bg-emerald-500 text-white border-none text-xs">Active</Badge>
                       </span>
                       <span className="font-medium text-emerald-600">
                         {farmer.enrollments[0].policy.name}

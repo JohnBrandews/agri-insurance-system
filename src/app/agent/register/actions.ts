@@ -4,11 +4,29 @@ import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/session"
 import { revalidatePath } from "next/cache"
 
+function getFarmCenter(coordinates: { lat: number; lng: number }[]) {
+  const totals = coordinates.reduce(
+    (acc, coordinate) => {
+      acc.lat += coordinate.lat
+      acc.lng += coordinate.lng
+      return acc
+    },
+    { lat: 0, lng: 0 }
+  )
+
+  return {
+    lat: totals.lat / coordinates.length,
+    lng: totals.lng / coordinates.length,
+  }
+}
+
 export async function registerFarmer(data: {
   fullName: string
   phone: string
   idNumber: string
   policyId: string
+  county: string
+  constituency: string
   acreage: number
   cropType: string
   coordinates: { lat: number, lng: number }[]
@@ -21,6 +39,12 @@ export async function registerFarmer(data: {
   })
 
   if (!agent) throw new Error("Agent profile not found")
+
+  if (data.coordinates.length < 3) {
+    throw new Error("A farm boundary must have at least 3 GPS points")
+  }
+
+  const centerPoint = getFarmCenter(data.coordinates)
 
   // 2. Create Farmer User
   let user = await prisma.user.findUnique({ where: { email: `${data.phone}@farmshield.local` } })
@@ -51,10 +75,12 @@ export async function registerFarmer(data: {
   const farm = await prisma.farm.create({
     data: {
       farmerId: farmer.id,
-      locationName: `Farm - ${data.idNumber}`,
+      locationName: `${data.constituency}, ${data.county}`,
       acreage: data.acreage,
       cropType: data.cropType,
       polygonCoordinates: JSON.stringify(data.coordinates),
+      latitude: centerPoint.lat,
+      longitude: centerPoint.lng,
       status: "HEALTHY"
     }
   })

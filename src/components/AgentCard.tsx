@@ -67,7 +67,7 @@ export function AgentCard({ agent }: AgentCardProps) {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Badge variant={isActive ? "success" : "warning"} className="text-[10px] uppercase tracking-wider">
+            <Badge className={`${isActive ? "bg-emerald-500 text-white" : "bg-amber-500 text-white"} text-[10px] uppercase tracking-wider border-none`}>
               {agent.status}
             </Badge>
           </div>
