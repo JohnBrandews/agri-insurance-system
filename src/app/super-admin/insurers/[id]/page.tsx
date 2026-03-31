@@ -2,9 +2,11 @@ import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/session"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Shield, Users, FileText, ChevronLeft, MapPin } from "lucide-react"
+import { Users, FileText, ChevronLeft } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import dynamic from "next/dynamic"
+
 const LeafletMap = dynamic(() => import("@/components/LeafletMap"), { ssr: false })
 
 export default async function InsurerDetailsPage({ params }: { params: { id: string } }) {
@@ -31,6 +33,8 @@ export default async function InsurerDetailsPage({ params }: { params: { id: str
   if (!insurer) return <div>Insurer not found</div>
 
   const allFarmers = insurer.agents.flatMap(a => a.farmersRegistered)
+  type FarmerRecord = (typeof allFarmers)[number]
+  type PolicyRecord = (typeof insurer.policies)[number]
   
   // Prepare map data for LeafletMap
   const mapFarms = allFarmers.flatMap(farmer => 
@@ -50,7 +54,7 @@ export default async function InsurerDetailsPage({ params }: { params: { id: str
         cropType: farm.cropType,
         status: farm.status,
         coordinates,
-        farmerName: (farmer as any).user.name
+        farmerName: farmer.user.name
       }
     })
   )
@@ -87,11 +91,11 @@ export default async function InsurerDetailsPage({ params }: { params: { id: str
                   </tr>
                 </thead>
                 <tbody>
-                  {insurer.policies.map(p => (
+                  {insurer.policies.map((p: PolicyRecord) => (
                     <tr key={p.id} className="border-b border-slate-100">
                       <td className="py-3 px-4 font-medium">{p.name}</td>
                       <td className="py-3 px-4">{p.cropType}</td>
-                      <td className="py-3 px-4 font-bold text-emerald-600">{(p as any)._count.enrollments} Farmers</td>
+                      <td className="py-3 px-4 font-bold text-emerald-600">{p._count.enrollments} Farmers</td>
                     </tr>
                   ))}
                 </tbody>
@@ -117,7 +121,7 @@ export default async function InsurerDetailsPage({ params }: { params: { id: str
                     <p className="text-xs text-slate-500">{a.region}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-slate-700">{(a as any).farmersRegistered.length}</p>
+                    <p className="text-sm font-bold text-slate-700">{a.farmersRegistered.length}</p>
                     <p className="text-[10px] text-slate-400 uppercase">Farmers</p>
                   </div>
                 </div>
@@ -138,8 +142,8 @@ export default async function InsurerDetailsPage({ params }: { params: { id: str
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="h-[400px] rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
                 <LeafletMap 
-                  farms={mapFarms as any} 
-                  onSelectFarm={(farm) => console.log("Selected farm:", farm)} 
+                  farms={mapFarms}
+                  onSelectFarm={(farm: (typeof mapFarms)[number]) => console.log("Selected farm:", farm)} 
                 />
               </div>
               <div className="overflow-x-auto border border-slate-200 rounded-xl">
@@ -153,11 +157,11 @@ export default async function InsurerDetailsPage({ params }: { params: { id: str
                     </tr>
                   </thead>
                   <tbody>
-                    {allFarmers.map(f => (
+                    {allFarmers.map((f: FarmerRecord) => (
                       <tr key={f.id} className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="py-3 px-4 font-medium text-slate-800">{(f as any).user.name}</td>
-                        <td className="py-3 px-4">{(f as any).farms.reduce((sum: number, farm: any) => sum + farm.acreage, 0)} acres</td>
-                        <td className="py-3 px-4 font-semibold text-blue-600">{(f as any).enrollments.length} Policies</td>
+                        <td className="py-3 px-4 font-medium text-slate-800">{f.user.name}</td>
+                        <td className="py-3 px-4">{f.farms.reduce((sum, farm) => sum + farm.acreage, 0)} acres</td>
+                        <td className="py-3 px-4 font-semibold text-blue-600">{f.enrollments.length} Policies</td>
                         <td className="py-3 px-4">
                           <Badge className="bg-emerald-500 text-white border-none">ACTIVE</Badge>
                         </td>

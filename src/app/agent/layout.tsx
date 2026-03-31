@@ -14,9 +14,9 @@ export default function AgentLayout({
       {/* On mobile, this sidebar will be hidden by default (managed by Tailwind hidden classes) */}
       <Sidebar role="AGENT" />
       
-      <div className="flex-1 flex flex-col z-10 relative">
+      <div className="flex-1 min-w-0 flex flex-col z-10 relative">
         <Header title="Agent Field Portal" />
-        <main className="flex-1 overflow-y-auto px-4 py-6 md:p-8">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 sm:px-6 lg:p-8">
           {children}
         </main>
       </div>

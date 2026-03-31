@@ -8,14 +8,15 @@ generator client {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  password  String
-  role      String    @default("FARMER")
-  name      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
-  lastLogin DateTime?
+  id              String    @id @default(cuid())
+  email           String    @unique
+  password        String
+  role            String    @default("FARMER")
+  name            String
+  profileImageUrl String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+  lastLogin       DateTime?
 
   company   InsuranceCompany? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String?

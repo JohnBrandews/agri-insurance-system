@@ -1,26 +1,54 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import { Shield, CloudRain, TrendingUp, ArrowRight, MapPin, Globe, CheckCircle, Zap, Users, Heart } from "lucide-react";
+import { getSession } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
+import SessionMenu from "@/components/layout/SessionMenu";
 
-export default function Home() {
+function getDashboardHref(role: string) {
+  if (role === "SUPER_ADMIN") return "/super-admin";
+  if (role === "INSURER") return "/insurer";
+  if (role === "AGENT") return "/agent";
+  return "/farmer";
+}
+
+export default async function Home() {
+  const session = await getSession();
+  const currentUser = session
+    ? await prisma.user.findUnique({
+        where: { id: session.id },
+        select: { name: true, profileImageUrl: true, role: true },
+      })
+    : null;
+
   return (
     <main className="min-h-screen bg-white">
       {/* Navigation */}
       <nav className="absolute top-0 left-0 right-0 z-50 p-6">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3 cursor-pointer group">
+          <Link href="/" className="flex items-center space-x-3 cursor-pointer group">
             <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20 group-hover:bg-white/30 transition-all">
               <Shield className="w-6 h-6 text-[#A7E92F]" />
             </div>
             <span className="text-xl font-bold text-[#A7E92F] uppercase tracking-tighter">FarmMan</span>
-          </div>
-          <div className="hidden md:flex items-center space-x-8 text-white font-semibold">
-            <Link href="#features" className="hover:text-emerald-300 transition-colors">Features</Link>
-            <Link href="#process" className="hover:text-emerald-300 transition-colors">How it Works</Link>
-            <Link href="#impact" className="hover:text-emerald-300 transition-colors">Impact</Link>
-            <Link href="/login" className="bg-white/20 backdrop-blur-md hover:bg-white/30 py-2 px-6 rounded-xl border border-white/20 transition-all">
-              Login
-            </Link>
+          </Link>
+          <div className="flex items-center gap-4 md:gap-8 text-white font-semibold">
+            <div className="hidden md:flex items-center space-x-8">
+              <Link href="#features" className="hover:text-emerald-300 transition-colors">Features</Link>
+              <Link href="#process" className="hover:text-emerald-300 transition-colors">How it Works</Link>
+              <Link href="#impact" className="hover:text-emerald-300 transition-colors">Impact</Link>
+            </div>
+            {currentUser ? (
+              <SessionMenu
+                name={currentUser.name}
+                imageUrl={currentUser.profileImageUrl}
+                dashboardHref={getDashboardHref(currentUser.role)}
+              />
+            ) : (
+              <Link href="/login" className="bg-white/20 backdrop-blur-md hover:bg-white/30 py-2 px-6 rounded-xl border border-white/20 transition-all">
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </nav>
@@ -233,7 +261,7 @@ export default function Home() {
             </div>
           </div>
           <div className="pt-12 border-t border-slate-50 text-center md:text-left flex flex-col md:flex-row justify-between text-slate-300 text-xs font-bold uppercase tracking-[0.2em]">
-            <p>© 2024 FarmMan. Securing the Future of Food.</p>
+            <p>© 2026 FarmMan. Securing the Future of Food.</p>
             <div className="flex gap-8 mt-4 md:mt-0">
                <Link href="#">Twitter / X</Link>
                <Link href="#">LinkedIn</Link>
@@ -244,3 +272,6 @@ export default function Home() {
     </main>
   );
 }
+
+
+

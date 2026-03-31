@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import Image from "next/image"
@@ -221,7 +221,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={e => setPassword(e.target.value)}
                       className="w-full pl-12 pr-12 py-4 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all bg-slate-50 text-slate-900 font-medium"
-                      placeholder="••••••••"
+                      placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                       required
                     />
                     <button
@@ -332,10 +332,13 @@ export default function LoginPage() {
 
           {/* Footer text */}
           <p className="text-center text-sm text-slate-400 mt-8">
-            © 2024 FarmMan Insurance. Secure authentication.
+            © 2026 FarmMan Insurance. Secure authentication.
           </p>
         </div>
       </div>
     </div>
   )
 }
+
+
+

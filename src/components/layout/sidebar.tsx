@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { LayoutDashboard, Users, FileText, Settings, LogOut, CloudRain, Map } from "lucide-react"
+import LogoutButton from "./LogoutButton"
 
 export default function Sidebar({ role }: { role: "SUPER_ADMIN" | "INSURER" | "AGENT" | "FARMER" }) {
   const navItems = {
@@ -57,10 +58,10 @@ export default function Sidebar({ role }: { role: "SUPER_ADMIN" | "INSURER" | "A
       </nav>
 
       <div className="p-4 border-t border-slate-100/50">
-        <Link href="/" className="flex items-center space-x-3 px-4 py-3 text-slate-500 hover:text-red-500 hover:bg-red-50/50 rounded-xl transition-all font-medium">
+        <LogoutButton className="flex w-full items-center space-x-3 px-4 py-3 text-slate-500 hover:text-red-500 hover:bg-red-50/50 rounded-xl transition-all font-medium text-left">
           <LogOut className="w-5 h-5" />
           <span>Log Out</span>
-        </Link>
+        </LogoutButton>
       </div>
     </aside>
   )
