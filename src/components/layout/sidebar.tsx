@@ -1,34 +1,10 @@
 import Link from "next/link"
-import { LayoutDashboard, Users, FileText, Settings, LogOut, CloudRain, Map } from "lucide-react"
+import { LogOut } from "lucide-react"
 import LogoutButton from "./LogoutButton"
+import { navItemsByRole, type AppRole } from "./nav-config"
 
-export default function Sidebar({ role }: { role: "SUPER_ADMIN" | "INSURER" | "AGENT" | "FARMER" }) {
-  const navItems = {
-    SUPER_ADMIN: [
-      { name: "Overview", href: "/super-admin", icon: LayoutDashboard },
-      { name: "Insurers", href: "/super-admin/insurers", icon: FileText },
-      { name: "Global Analytics", href: "/super-admin/analytics", icon: CloudRain },
-      { name: "Settings", href: "/super-admin/settings", icon: Settings },
-    ],
-    INSURER: [
-      { name: "Dashboard", href: "/insurer", icon: LayoutDashboard },
-      { name: "Policies", href: "/insurer/policies", icon: FileText },
-      { name: "Agents", href: "/insurer/agents", icon: Users },
-      { name: "Farm Map", href: "/insurer/map", icon: Map },
-      { name: "Triggers & Payouts", href: "/insurer/payouts", icon: CloudRain },
-    ],
-    AGENT: [
-      { name: "Home", href: "/agent", icon: LayoutDashboard },
-      { name: "My Farmers", href: "/agent/farmers", icon: Users },
-      { name: "Register Farm", href: "/agent/register", icon: Map },
-    ],
-    FARMER: [
-      { name: "My Farm", href: "/farmer", icon: LayoutDashboard },
-      { name: "Policy", href: "/farmer/policy", icon: FileText },
-    ],
-  }
-
-  const items = navItems[role]
+export default function Sidebar({ role }: { role: AppRole }) {
+  const items = navItemsByRole[role]
 
   return (
     <aside className="w-64 flex-shrink-0 flex flex-col h-screen glass-panel bg-white/60 m-4 shadow-premium rounded-3xl border border-white/40 z-10 hidden lg:flex">

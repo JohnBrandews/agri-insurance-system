@@ -82,7 +82,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-emerald-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-blue-50 lg:flex">
       {/* Left side - Branding and Image Section */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <Image 
@@ -133,7 +133,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
+      <div className="flex w-full items-center justify-center p-4 sm:p-6 lg:w-1/2 lg:p-12">
         <div className="w-full max-w-md">
           {/* Logo for mobile */}
           <div className="lg:hidden flex items-center justify-center space-x-3 mb-8">
@@ -144,7 +144,7 @@ export default function LoginPage() {
           </div>
 
           {/* Login Card */}
-          <div className="bg-white rounded-3xl shadow-2xl shadow-slate-200/50 p-8 md:p-10 border border-slate-100">
+          <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-2xl shadow-slate-200/50 sm:p-8 md:p-10">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Welcome Back</h2>
               <p className="text-slate-500">Sign in to access your dashboard</p>
@@ -221,7 +221,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={e => setPassword(e.target.value)}
                       className="w-full pl-12 pr-12 py-4 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all bg-slate-50 text-slate-900 font-medium"
-                      placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                      placeholder="........"
                       required
                     />
                     <button
@@ -295,7 +295,7 @@ export default function LoginPage() {
                       type="text"
                       value={otp}
                       onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                      className="w-full px-4 py-4 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all bg-slate-50 text-center tracking-[1.5em] text-2xl font-bold font-mono text-slate-800"
+                      className="w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-4 text-center font-mono text-xl font-bold tracking-[0.8em] text-slate-800 transition-all focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:text-2xl sm:tracking-[1.2em]"
                       placeholder="0000"
                       maxLength={4}
                       required

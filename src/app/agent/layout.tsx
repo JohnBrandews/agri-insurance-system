@@ -8,14 +8,14 @@ export default function AgentLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex h-screen bg-slate-50 relative overflow-hidden">
+    <div className="relative flex min-h-screen bg-slate-50 overflow-x-hidden lg:h-screen lg:overflow-hidden">
       <div className="absolute top-[20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-100/40 blur-3xl pointer-events-none" />
       
       {/* On mobile, this sidebar will be hidden by default (managed by Tailwind hidden classes) */}
       <Sidebar role="AGENT" />
       
       <div className="flex-1 min-w-0 flex flex-col z-10 relative">
-        <Header title="Agent Field Portal" />
+        <Header title="Agent Field Portal" role="AGENT" />
         <main className="flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 sm:px-6 lg:p-8">
           {children}
         </main>
