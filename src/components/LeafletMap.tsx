@@ -91,7 +91,7 @@ export default function LeafletMap({
   onSelectFarm,
 }: {
   farms: FarmData[]
-  onSelectFarm: (farm: FarmData) => void
+  onSelectFarm?: (farm: FarmData) => void
 }) {
   // Default center — Kenya
   const center: [number, number] = [-0.0236, 37.9062]
@@ -134,7 +134,7 @@ export default function LeafletMap({
               position={position}
               icon={createIcon(farm.status)}
               eventHandlers={{
-                click: () => onSelectFarm(farm),
+                click: () => onSelectFarm?.(farm),
               }}
             >
               <Popup>

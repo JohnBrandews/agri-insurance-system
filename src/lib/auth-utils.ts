@@ -49,7 +49,8 @@ export async function sendEmailMessage(params: { to: string; subject: string; bo
 
 // Real Email Service (Brevo Integration)
 export async function sendSetupEmail(email: string, token: string, role: string) {
-  const setupUrl = `http://localhost:3000/setup-password?token=${token}&role=${role}`;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://agri-insurance-system.vercel.app";
+  const setupUrl = `${baseUrl.replace(/\/$/, "")}/setup-password?token=${token}&role=${role}`;
 
   const mailOptions = {
     from: process.env.SMTP_FROM,

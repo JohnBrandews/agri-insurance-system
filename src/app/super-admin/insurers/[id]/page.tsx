@@ -143,7 +143,6 @@ export default async function InsurerDetailsPage({ params }: { params: { id: str
               <div className="h-[400px] rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
                 <LeafletMap 
                   farms={mapFarms}
-                  onSelectFarm={(farm: (typeof mapFarms)[number]) => console.log("Selected farm:", farm)} 
                 />
               </div>
               <div className="overflow-x-auto border border-slate-200 rounded-xl">
