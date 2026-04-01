@@ -10,9 +10,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 })
     }
 
+    const normalizedEmail = email.trim().toLowerCase()
+
     // Check if user with this email already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email: normalizedEmail }
     })
 
     if (existingUser) {
@@ -22,7 +24,7 @@ export async function POST(req: Request) {
     // 1. Create the Agent User
     const user = await prisma.user.create({
       data: {
-        email,
+        email: normalizedEmail,
         password: "N/A", // They must set it up
         name,
         role: "AGENT",
@@ -46,15 +48,16 @@ export async function POST(req: Request) {
     const setupToken = generateSetupToken()
     await prisma.verificationToken.create({
       data: {
-        identifier: email,
+        identifier: normalizedEmail,
         token: setupToken,
+        type: "SETUP",
         role: "AGENT",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
       }
     })
 
     // 4. Send Mock Email
-    await sendSetupEmail(email, setupToken, "agent")
+    await sendSetupEmail(normalizedEmail, setupToken, "agent")
 
     return NextResponse.json({ success: true, message: "Agent invited successfully. Email sent." })
 

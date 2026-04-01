@@ -85,18 +85,21 @@ export async function resendInvitation(agentId: string) {
   if (!agent) throw new Error("Agent not found")
 
   const token = generateSetupToken()
-  const expires = new Date(Date.now() + 24 * 60 * 60000) // 24 hours
+  const normalizedEmail = agent.user.email.toLowerCase().trim()
+  const ONEDAY_MS = 24 * 60 * 60 * 1000
+  const expires = new Date(Date.now() + ONEDAY_MS)
 
   await prisma.verificationToken.create({
     data: {
-      identifier: agent.user.email,
+      identifier: normalizedEmail,
       token,
+      type: "SETUP",
       expires,
       role: "AGENT"
     }
   })
 
-  await sendSetupEmail(agent.user.email, token, "AGENT")
+  await sendSetupEmail(normalizedEmail, token, "AGENT")
   return { success: true }
 }
 
