@@ -51,9 +51,7 @@ function calculateAcreage(coords: Coordinate[]) {
   return Number((Math.abs(areaInSquareMeters) / 2 / 4047).toFixed(2))
 }
 
-function getMinimumMovementDistance(sampleAccuracy: number) {
-  return Math.max(8, Math.min(20, sampleAccuracy * 0.9))
-}
+
 
 export function FarmBoundaryTracker({ onBoundaryComplete }: FarmBoundaryTrackerProps) {
   const [isTracking, setIsTracking] = useState(false)
@@ -90,27 +88,42 @@ export function FarmBoundaryTracker({ onBoundaryComplete }: FarmBoundaryTrackerP
         setCurrentPosition({ lat: nextCoordinate.lat, lng: nextCoordinate.lng })
         setAccuracy(Math.round(nextCoordinate.accuracy))
 
-        if (nextCoordinate.accuracy > MAX_ACCEPTABLE_ACCURACY_METERS) {
+        if (nextCoordinate.accuracy > 12) {
           setTrackerHint(
-            `GPS accuracy is still weak at about ${Math.round(nextCoordinate.accuracy)}m. Move to an open area and wait a moment.`
+            `GPS signal is a bit fuzzy (+/-${Math.round(nextCoordinate.accuracy)}m). Try moving to a more open area for better results.`
           )
-          return
+          // We still show the position but we don't record points if accuracy is too low
+          if (nextCoordinate.accuracy > MAX_ACCEPTABLE_ACCURACY_METERS) return
+        } else {
+          setTrackerHint("Strong GPS signal. Continue walking the farm boundary.")
         }
 
-        setTrackerHint("GPS signal is stable. Keep walking the outer boundary of the farm.")
         setError(null)
 
         setCoordinates((previousCoordinates) => {
           if (previousCoordinates.length > 0) {
             const lastCoordinate = previousCoordinates[previousCoordinates.length - 1]
             const distance = calculateDistance(lastCoordinate, nextCoordinate)
-            const minimumMovement = getMinimumMovementDistance(nextCoordinate.accuracy)
+            
+            // INCREASED THRESHOLD: Use a more conservative movement threshold to filter out small GPS jitters
+            // If the user only walked 2m but GPS says 20m, the accuracy was likely poor.
+            // We now require movement to be at least 1.5x the current accuracy radius to be considered "real"
+            const minimumMovement = Math.max(10, nextCoordinate.accuracy * 1.5)
+
+            // Speed check: If distance is > 50m in one update (usually 1 sec), it's likely a GPS 'teleport' jump
+            if (distance > 50) {
+              console.log("Ignored suspicious GPS jump:", distance, "meters")
+              return previousCoordinates
+            }
 
             if (distance < minimumMovement) {
               return previousCoordinates
             }
 
             setDistanceCovered((currentDistance) => currentDistance + distance)
+          } else {
+            // For the first point, we require very good accuracy to ensure a solid anchor
+            if (nextCoordinate.accuracy > 10) return previousCoordinates
           }
 
           return [...previousCoordinates, { lat: nextCoordinate.lat, lng: nextCoordinate.lng }]

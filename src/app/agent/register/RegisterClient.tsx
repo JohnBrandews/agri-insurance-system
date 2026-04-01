@@ -359,8 +359,30 @@ export function RegisterClient({
               <p className="mt-1">Boundary points captured: {coordinates.length}</p>
               <p className="mt-1">Estimated acreage: {acreage || "0.00"} acres</p>
             </div>
-            <Button onClick={handleSubmit} disabled={loading || uploadingFarmerPhoto || uploadingFarmPhoto || !policyId} className="mt-4 h-12 w-full bg-emerald-600 text-lg font-bold text-white hover:bg-emerald-700">
-              {loading ? "Completing Registration..." : "Complete Registration"}
+            <Button
+              onClick={handleSubmit}
+              disabled={
+                loading ||
+                uploadingFarmerPhoto ||
+                uploadingFarmPhoto ||
+                !fullName.trim() ||
+                !phone.trim() ||
+                !idNumber.trim() ||
+                !county ||
+                !constituency ||
+                !policyId ||
+                coordinates.length < 3
+              }
+              className="mt-4 h-12 w-full bg-emerald-600 text-lg font-bold text-white hover:bg-emerald-700 disabled:bg-slate-300 transition-all"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Completing Registration...
+                </>
+              ) : (
+                "Complete Registration"
+              )}
             </Button>
           </div>
         )

@@ -5,6 +5,7 @@ import { Users, Plus, MapPin, Phone, Mail, Sprout, Calendar } from "lucide-react
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/session"
+import { FarmerDeleteButton } from "@/components/FarmerDeleteButton"
 
 export default async function FarmersPage() {
   const session = await requireRole(["AGENT"])
@@ -156,12 +157,16 @@ export default async function FarmersPage() {
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-slate-100">
-                  <p className="text-xs text-slate-400 flex items-center">
-                    <Calendar className="w-3 h-3 mr-1" />
-                    Registered {farmer.user.createdAt.toLocaleDateString()}
-                  </p>
-                </div>
+                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <p className="text-xs text-slate-400 flex items-center">
+                      <Calendar className="w-3 h-3 mr-1" />
+                      {farmer.user.createdAt.toLocaleDateString()}
+                    </p>
+                    <FarmerDeleteButton
+                      farmerId={farmer.id}
+                      farmerName={farmer.user.name}
+                    />
+                  </div>
               </CardContent>
             </Card>
           ))}

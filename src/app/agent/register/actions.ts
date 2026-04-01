@@ -40,14 +40,21 @@ export async function registerFarmer(data: {
   })
 
   if (!agent) throw new Error("Agent profile not found")
+
+  // Robust validation
+  if (!data.fullName?.trim()) throw new Error("Full name is required")
+  if (!data.phone?.trim() || data.phone.length < 10) throw new Error("A valid phone number is required")
+  if (!data.idNumber?.trim()) throw new Error("National ID number is required")
+  if (!data.county) throw new Error("County is required")
+  if (!data.constituency) throw new Error("Constituency is required")
   if (!data.policyId) throw new Error("Please select an active policy before submitting")
 
-  if (data.coordinates.length < 3) {
+  if (!data.coordinates || data.coordinates.length < 3) {
     throw new Error("A farm boundary must have at least 3 GPS points")
   }
 
   if (!Number.isFinite(data.acreage) || data.acreage <= 0) {
-    throw new Error("Acreage must be a valid number greater than zero")
+    throw new Error("Farm acreage must be a valid number greater than zero. Did you complete the GPS tracking?")
   }
 
   const centerPoint = getFarmCenter(data.coordinates)

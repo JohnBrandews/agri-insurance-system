@@ -38,7 +38,7 @@ export default function SessionMenu({ name, imageUrl, dashboardHref }: SessionMe
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+        <div className="absolute left-0 sm:left-auto sm:right-0 mt-3 w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl z-50">
           <Link
             href={dashboardHref}
             onClick={() => setIsOpen(false)}
